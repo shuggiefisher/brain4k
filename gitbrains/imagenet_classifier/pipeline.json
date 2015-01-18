@@ -1,0 +1,89 @@
+{
+    "data": {
+        "images": {
+            "data_type": "csv",
+            "filename": "images.csv"
+        },
+        "image features": {
+            "data_type": "hdf5",
+            "filename": "image_features.hdf5"
+        },
+        "extracted_features": {
+            "data_type": "join",
+            "join": {
+                "left": "images",
+                "right": "image_features",
+                "left_on": "url",
+                "right_on": "processed_urls",
+                "return_keys": {
+                    "left": "label",
+                    "right": "features"
+                }
+            }
+        },
+        "image_features_data": {
+            "data_type": "alias",
+            "parent": "extracted_features",
+            "key": ["features"]
+        },
+        "image_features_target": {
+            "data_type": "alias",
+            "parent": "extracted_features",
+            "key": ["label"]
+        },
+        "test_train_features": {
+            "data_type": "hdf5",
+            "filename": "test_train_features.hdf5"
+        },
+        "image_classifier_predictions": {
+            "data_type": "hdf5",
+            "filename": "image_classifier_predictions.hdf5"
+        }
+    },
+    "models": {
+        "imagenet": {
+            "model_type": "org.berkeleyvision.caffe.bvlc_caffenet"
+        },
+        "data_splitter": {
+            "model_type": "org.scikit-learn.cross_validation.test_train_split",
+            "parameters": {
+                "ratio": 0.8
+            },
+            "version": 1
+        },
+        "naive_bayes_classifier": {
+            "model_type": "org.scikit-learn.naive_bayes.MultinomialNB",
+            "filename": "naive_bayes_classifier.model"
+        }
+    },
+    "metrics": {
+        "class_confusion": {
+            "metric_type": "confusion_matrix"
+        },
+        "class_certainty": {
+            "metric_type": "r2_score"
+        }
+    },
+    "stages": [
+        {
+            "model": "imagenet",
+            "inputs": ["images"],
+            "outputs": ["image_features"],
+            "actions": ["predict"]
+        },
+        {
+            "model": "data_splitter",
+            "inputs": ["image_features_data", "image_features_target"],
+            "outputs": ["test_train_features"],
+            "actions": ["split"]
+        },
+        {
+            "model": "naive_bayes_classifier",
+            "inputs": ["test_train_features"],
+            "outputs": ["test_train_features"],
+            "actions": ["train", "test", "predict"],
+            "metrics": ["class_confusion", "class_certainty"]
+        }
+    ],
+    "version": 1
+}

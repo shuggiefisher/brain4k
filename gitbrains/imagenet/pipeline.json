@@ -1,0 +1,45 @@
+{
+    "data": {
+        "images": {
+            "data_type": "csv",
+            "local_filename": "images.csv"
+        },
+        "image features": {
+            "data_type": "hdf5",
+            "local_filename": "image_features.hdf5"
+        },
+        "caffe_mean": {
+            "local_filename": "/Users/rob/Sites/feasturize/python/caffe/imagenet/ilsvrc_2012_mean.npy"
+        },
+        "caffe_weights": {
+            "local_filename": "/Users/rob/Sites/feasturize/caffe/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel"
+        },
+        "deploy.prototxt": {
+            "local_filename": "/Users/rob/Sites/feasturize/caffe/models/bvlc_reference_caffenet/deploy.prototxt"
+        }
+    },
+    "models": {
+        "imagenet": {
+            "model_type": "org.berkeleyvision.caffe.bvlc_caffenet",
+            "params": {
+                "output_keys": {
+                    "fc7": {"dimensions": [4096], "dtype": "f4"}
+                }
+            },
+            "files": {
+                "mean": "caffe_mean",
+                "weights": "caffe_weights",
+                "prototxt": "deploy.prototxt",
+            }
+        }
+    },
+    "stages": [
+        {
+            "model": "imagenet",
+            "inputs": ["images"],
+            "outputs": ["image_features"],
+            "actions": ["predict"]
+        }
+    ],
+    "version": 1
+}
