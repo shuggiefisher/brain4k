@@ -1,6 +1,6 @@
 import os
 
-from data_interfaces import CSVInterface, HDF5Interface, compute_file_hash
+from data_interfaces import CSVInterface, HDF5Interface
 
 
 def path_to_file(repo_path, *args):
@@ -11,33 +11,23 @@ def path_to_file(repo_path, *args):
 
 class Data(object):
 
-    def __init__(self, name, config, folder='cache'):
+    def __init__(self, name, config, data_config, folder='cache'):
         self.name = name
-        self.filehash = config.get('sha1', None)
-        local_filename = config.get('local_filename', None)
+        self.filehash = data_config.get('sha1', None)
+        local_filename = data_config.get('local_filename', None)
         if local_filename:
             self.filename = path_to_file(
                 config['repo_path'],
-                [folder, local_filename],
+                folder,
+                local_filename
             )
-
-    def matches_hash(self):
-        """
-        Does the hash in pipeline json, match the hash of the cached file?
-        """
-        if os.path.exists(self.filename):
-            filehash = compute_file_hash(self.filename)
-            if self.filehash == filehash:
-                return True
-
-        return False
 
 
 class InputData(Data):
 
-    def __init__(self, name, config, folder='data'):
-        super(InputData, self).__init__(name, config, folder)
-        self.reader_class = READERS[config['input_type']]
+    def __init__(self, name, config, data_config, folder='data'):
+        super(InputData, self).__init__(name, config, data_config, folder)
+        self.reader_class = READERS[data_config['data_type']]
         self.reader = self.reader_class(self.filename)
 
     def read_chunk(self, chunk_size=1000):
@@ -46,9 +36,9 @@ class InputData(Data):
 
 class OutputData(Data):
 
-    def __init__(self, name, config, folder='cache'):
-        super(InputData, self).__init__(name, config, folder)
-        self.writer_class = READERS[config['input_type']]
+    def __init__(self, name, config, data_config, folder='cache'):
+        super(OutputData, self).__init__(name, config, data_config, folder)
+        self.writer_class = READERS[data_config['data_type']]
         self.writer = self.writer_class(self.filename)
 
     def open(self, mode='r'):
