@@ -34,7 +34,7 @@ class PipelineStage(object):
 
 
 MODELS = {
-    "org.scikit-learn.naive_bayes.MultinomialNB": "models.sklearn.NaiveBayes",
-    "org.berkeleyvision.caffe.bvlc_caffenet": "models.caffe.BVLCCaffeNet",
-    "org.scikit-learn.cross_validation.test_train_split": "models.sklearn.TestTrainSplit"
+    "org.scikit-learn.naive_bayes.MultinomialNB": "brain4k.models.sklearn.NaiveBayes",
+    "org.berkeleyvision.caffe.bvlc_caffenet": "brain4k.models.caffe.BVLCCaffeNet",
+    "org.scikit-learn.cross_validation.test_train_split": "brain4k.models.sklearn.TestTrainSplit"
 }

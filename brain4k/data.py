@@ -2,7 +2,7 @@ import os
 import sys
 import urllib
 
-from brain4k.data_interfaces import CSVInterface, HDF5Interface, compute_file_hash
+from data_interfaces import CSVInterface, HDF5Interface, compute_file_hash
 
 
 def path_to_file(repo_path, *args):

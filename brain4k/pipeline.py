@@ -2,11 +2,10 @@ import os
 import json
 import logging
 
-from brain4k.data import path_to_file
-from brain4k.models import MODELS
+from data import path_to_file
+from models import MODELS
 
-
-IMAGENET_EXTRACTION = 'gitbrains/imagenet'
+IMAGENET_EXTRACTION = os.path.join(os.getcwd(), 'brain4k/brain4k/imagenet')
 
 
 def imagenet_parser(repo_path=IMAGENET_EXTRACTION, cache_stages=True):
