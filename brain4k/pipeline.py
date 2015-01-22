@@ -2,8 +2,8 @@ import os
 import json
 import logging
 
-from data import path_to_file
-from models import MODELS
+from brain4k.data import path_to_file
+from brain4k.models import MODELS
 
 
 IMAGENET_EXTRACTION = 'gitbrains/imagenet'
@@ -31,6 +31,7 @@ def imagenet_parser(repo_path=IMAGENET_EXTRACTION, cache_stages=True):
                 logging.info("Skipping stage {0} (cached)".format(stage_index + 1))
                 continue
             else:
+                import ipdb; ipdb.set_trace()
                 logging.info("Starting stage {0}".format(stage_index + 1))
                 methods = stage.get('actions', [])
 

@@ -1,0 +1,63 @@
+{
+    "models": {
+        "imagenet": {
+            "model_type": "org.berkeleyvision.caffe.bvlc_caffenet",
+            "files": {
+                "weights": "caffe_weights",
+                "prototxt": "deploy.prototxt",
+                "mean": "caffe_mean"
+            },
+            "params": {
+                "output_keys": {
+                    "fc7": {
+                        "dtype": "f4",
+                        "dimensions": [
+                            4096
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "stages": [
+        {
+            "inputs": [
+                "images"
+            ],
+            "accept_variance_in": [
+                "image_features"
+            ],
+            "sha1": "5a22a92b4bb1b5333440c186cd27539b863d3521",
+            "outputs": [
+                "image_features"
+            ],
+            "actions": [
+                "predict"
+            ],
+            "model": "imagenet"
+        }
+    ],
+    "data": {
+        "images": {
+            "local_filename": "images.csv",
+            "data_type": "csv"
+        },
+        "caffe_weights": {
+            "url": "http://dl.caffe.berkeleyvision.org/bvlc_reference_caffenet.caffemodel",
+            "sha1": "4c8d77deb20ea792f84eb5e6d0a11ca0a8660a46"
+        },
+        "deploy.prototxt": {
+            "url": "https://raw.githubusercontent.com/BVLC/caffe/master/models/bvlc_reference_caffenet/deploy.prototxt",
+            "sha1": "d927168d1f2c9e32ff50ff1a69aacb775b00bd0c"
+        },
+        "image_features": {
+            "local_filename": "image_features.hdf5",
+            "data_type": "hdf5"
+        },
+        "caffe_mean": {
+            "url": "https://github.com/BVLC/caffe/raw/master/python/caffe/imagenet/ilsvrc_2012_mean.npy",
+            "sha1": "8284f7ac12f5b0f6d5069c1fac00d8e0ba647b2f"
+        }
+    },
+    "version": 1
+}

@@ -1,5 +1,5 @@
-from data import InputData, OutputData
-from data_interfaces import compute_json_hash, compute_file_hash
+from brain4k.data import InputData, OutputData
+from brain4k.data_interfaces import compute_json_hash, compute_file_hash
 
 
 class PipelineStage(object):

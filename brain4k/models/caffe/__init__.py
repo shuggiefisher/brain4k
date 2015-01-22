@@ -3,8 +3,8 @@ import logging
 import numpy as np
 import caffe
 
-from models import PipelineStage
-from data import Data
+from brain4k.models import PipelineStage
+from brain4k.data import Data
 
 
 class BVLCCaffeNet(PipelineStage):
