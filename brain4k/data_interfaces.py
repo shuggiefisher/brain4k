@@ -2,6 +2,7 @@ import os
 import hashlib
 import json
 import logging
+import cPickle
 from functools import partial
 
 import h5py
@@ -91,3 +92,12 @@ class CSVInterface(object):
         for chunk in df:
             yield chunk
 
+
+class PickleInterface(object):
+
+    def __init__(self, filename):
+        self.filename = filename
+
+    def save(self, obj):
+        with open(self.filename, 'rb') as f:
+            cPickle.dump(obj, f, protocol=cPickle.HIGHEST_PROTOCOL)

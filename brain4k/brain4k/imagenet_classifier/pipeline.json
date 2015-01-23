@@ -28,9 +28,13 @@
             "data_type": "hdf5",
             "filename": "test_train_features.hdf5"
         },
-        "image_classifier_predictions": {
+        "image_classifier": {
+            "data_type": "pickle",
+            "filename": "image_classifier.pkl"
+        },
+        "image_classifier_test_results": {
             "data_type": "hdf5",
-            "filename": "image_classifier_predictions.hdf5"
+            "filename": "image_classifier_test_results.hdf5"
         }
     },
     "transforms": {
@@ -85,8 +89,7 @@
             "version": 1
         },
         "naive_bayes_classifier": {
-            "transform_type": "org.scikit-learn.naive_bayes.MultinomialNB",
-            "filename": "naive_bayes_classifier.model"
+            "transform_type": "org.scikit-learn.naive_bayes.MultinomialNB"
         }
     },
     "metrics": {
@@ -129,8 +132,8 @@
         {
             "transform": "naive_bayes_classifier",
             "inputs": ["test_train_features"],
-            "outputs": ["test_train_features"],
-            "actions": ["train", "test", "predict"],
+            "outputs": ["image_classifier", "image_classifier_test_results"],
+            "actions": ["train", "test"],
             "metrics": ["class_confusion", "class_certainty"]
         }
     ],
