@@ -78,12 +78,13 @@ class CSVInterface(object):
         else:
             return None
 
-    def read_chunk(self, chunk_size):
+    def read_chunk(self, chunk_size, keys=['url']):
         df = pd.read_csv(
             self.filename,
             compression=self._get_compression(),
-            usecols=['url'],
+            usecols=keys,
             chunksize=chunk_size
         )
         for chunk in df:
             yield chunk
+

@@ -1,35 +1,28 @@
 {
     "data": {
         "images": {
-            "data_type": "csv",
-            "filename": "images.csv"
+            "local_filename": "images.csv",
+            "data_type": "csv"
         },
-        "image features": {
-            "data_type": "hdf5",
-            "filename": "image_features.hdf5"
+        "caffe_weights": {
+            "url": "http://dl.caffe.berkeleyvision.org/bvlc_reference_caffenet.caffemodel",
+            "sha1": "4c8d77deb20ea792f84eb5e6d0a11ca0a8660a46"
         },
-        "extracted_features": {
-            "data_type": "join",
-            "join": {
-                "left": "images",
-                "right": "image_features",
-                "left_on": "url",
-                "right_on": "processed_urls",
-                "return_keys": {
-                    "left": "label",
-                    "right": "features"
-                }
-            }
+        "deploy.prototxt": {
+            "url": "https://raw.githubusercontent.com/BVLC/caffe/master/models/bvlc_reference_caffenet/deploy.prototxt",
+            "sha1": "d927168d1f2c9e32ff50ff1a69aacb775b00bd0c"
         },
-        "image_features_data": {
-            "data_type": "alias",
-            "parent": "extracted_features",
-            "key": ["features"]
+        "image_features": {
+            "local_filename": "image_features.hdf5",
+            "data_type": "hdf5"
         },
-        "image_features_target": {
-            "data_type": "alias",
-            "parent": "extracted_features",
-            "key": ["label"]
+        "caffe_mean": {
+            "url": "https://github.com/BVLC/caffe/raw/master/python/caffe/imagenet/ilsvrc_2012_mean.npy",
+            "sha1": "8284f7ac12f5b0f6d5069c1fac00d8e0ba647b2f"
+        },
+        "features_and_labels": {
+            "local_filename": "features_and_labels.hdf5",
+            "data_type": "hdf5"
         },
         "test_train_features": {
             "data_type": "hdf5",
@@ -40,19 +33,57 @@
             "filename": "image_classifier_predictions.hdf5"
         }
     },
-    "models": {
+    "transforms": {
         "imagenet": {
-            "model_type": "org.berkeleyvision.caffe.bvlc_caffenet"
+            "transform_type": "org.berkeleyvision.caffe.bvlc_caffenet",
+            "files": {
+                "weights": "caffe_weights",
+                "prototxt": "deploy.prototxt",
+                "mean": "caffe_mean"
+            },
+            "params": {
+                "output_keys": {
+                    "fc7": {
+                        "dtype": "f4",
+                        "dimensions": [
+                            4096
+                        ]
+                    }
+                }
+            }
+        },
+        "labels_features_join": {
+            "transform_type": "com.brain4k.transforms.data_join",
+            "params": {
+                "left_on": "url",
+                "right_on": "processed_urls",
+                "retain_keys": {
+                    "left": "label",
+                    "right": "fc7"
+                },
+                "output_keys": {
+                    "labels": {
+                        "dtype": "i2",
+                        "dimensions": [1]
+                    },
+                    "fc7": {
+                        "dtype": "f4",
+                        "dimensions": [
+                            4096
+                        ]
+                    }
+                }
+            }
         },
         "data_splitter": {
-            "model_type": "org.scikit-learn.cross_validation.test_train_split",
+            "transform_type": "org.scikit-learn.cross_validation.test_train_split",
             "parameters": {
                 "ratio": 0.8
             },
             "version": 1
         },
         "naive_bayes_classifier": {
-            "model_type": "org.scikit-learn.naive_bayes.MultinomialNB",
+            "transform_type": "org.scikit-learn.naive_bayes.MultinomialNB",
             "filename": "naive_bayes_classifier.model"
         }
     },
@@ -66,19 +97,35 @@
     },
     "stages": [
         {
-            "model": "imagenet",
-            "inputs": ["images"],
-            "outputs": ["image_features"],
-            "actions": ["predict"]
+            "inputs": [
+                "images"
+            ],
+            "accept_variance_in": [
+                "image_features"
+            ],
+            "sha1": "5a22a92b4bb1b5333440c186cd27539b863d3521",
+            "outputs": [
+                "image_features"
+            ],
+            "actions": [
+                "predict"
+            ],
+            "transform": "imagenet"
         },
         {
-            "model": "data_splitter",
+            "transform": "labels_features_join",
+            "inputs": ["image_features", "images"],
+            "outputs": ["features_and_labels"],
+            "actions": ["join"]
+        },
+        {
+            "transform": "data_splitter",
             "inputs": ["image_features_data", "image_features_target"],
             "outputs": ["test_train_features"],
             "actions": ["split"]
         },
         {
-            "model": "naive_bayes_classifier",
+            "transform": "naive_bayes_classifier",
             "inputs": ["test_train_features"],
             "outputs": ["test_train_features"],
             "actions": ["train", "test", "predict"],

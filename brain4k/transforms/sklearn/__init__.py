@@ -1,4 +1,4 @@
-from brain4k.models import PipelineStage
+from brain4k.transforms import PipelineStage
 
 
 class NaiveBayes(PipelineStage):

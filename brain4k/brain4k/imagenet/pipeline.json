@@ -1,7 +1,7 @@
 {
-    "models": {
+    "transforms": {
         "imagenet": {
-            "model_type": "org.berkeleyvision.caffe.bvlc_caffenet",
+            "transform_type": "org.berkeleyvision.caffe.bvlc_caffenet",
             "files": {
                 "weights": "caffe_weights",
                 "prototxt": "deploy.prototxt",
@@ -34,7 +34,7 @@
             "actions": [
                 "predict"
             ],
-            "model": "imagenet"
+            "transform": "imagenet"
         }
     ],
     "data": {

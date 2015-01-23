@@ -3,7 +3,7 @@ import logging
 import numpy as np
 import caffe
 
-from brain4k.models import PipelineStage
+from brain4k.transforms import PipelineStage
 from brain4k.data import Data
 
 
@@ -12,8 +12,8 @@ class BVLCCaffeNet(PipelineStage):
     name = "org.berkeleyvision.caffe.bvlc_caffenet"
 
     def __init__(self, stage_config, config, **kwargs):
-        self.params = config['models'][stage_config['model']]['params']
-        self.files = {name: Data(data_name, config, config['data'][data_name]) for name, data_name in config['models'][stage_config['model']]['files'].iteritems()}
+        self.params = config['transforms'][stage_config['transform']]['params']
+        self.files = {name: Data(data_name, config, config['data'][data_name]) for name, data_name in config['transforms'][stage_config['transform']]['files'].iteritems()}
         super(BVLCCaffeNet, self).__init__(stage_config, config, **kwargs)
         if len(self.outputs) != 1:
             raise ValueError("{0} expects only one output".format(self.name))
@@ -21,16 +21,16 @@ class BVLCCaffeNet(PipelineStage):
     def predict(self):
 
         for index, input_data in enumerate(self.inputs):
-            h5py_file = self.outputs[index].writer.open(mode='w')
-            self.outputs[index].writer.create_dataset(
+            h5py_file = self.outputs[index].io.open(mode='w')
+            self.outputs[index].io.create_dataset(
                 h5py_file,
                 self.params['output_keys'],
-                input_data.reader.get_row_count()
+                input_data.io.get_row_count()
             )
 
             chunk_size = 10
 
-            for chunk in input_data.reader.read_chunk(chunk_size=chunk_size):
+            for chunk in input_data.io.read_chunk(chunk_size=chunk_size):
                 inputs = self._prepare_image_batch(chunk['url'], chunk_size)
                 logging.debug("Making {0} predictions with {1}".format(chunk_size, self.name))
                 out = self._net.forward_all(
@@ -40,9 +40,9 @@ class BVLCCaffeNet(PipelineStage):
                 for key in out.keys():
                     if key not in self.params['output_keys'].keys():
                         del out[key]
-                self.outputs[0].writer.write_chunk(h5py_file, out, self.params['output_keys'])
+                self.outputs[0].io.write_chunk(h5py_file, out, self.params['output_keys'])
 
-            self.outputs[index].writer.save(h5py_file)
+            self.outputs[index].io.save(h5py_file)
 
     def _prepare_image_batch(self, urls, chunk_size):
         logging.debug("Fetching remote images...")
