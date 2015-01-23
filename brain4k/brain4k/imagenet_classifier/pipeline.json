@@ -78,7 +78,9 @@
         "data_splitter": {
             "transform_type": "org.scikit-learn.cross_validation.test_train_split",
             "parameters": {
-                "ratio": 0.8
+                "test_size": 0.2,
+                "data": "fc7",
+                "target": "label"
             },
             "version": 1
         },
@@ -120,7 +122,7 @@
         },
         {
             "transform": "data_splitter",
-            "inputs": ["image_features_data", "image_features_target"],
+            "inputs": ["features_and_labels"],
             "outputs": ["test_train_features"],
             "actions": ["split"]
         },

@@ -10,14 +10,10 @@ class DataJoin(PipelineStage):
     Perform a left join across two datasources.
 
     Useful in case one stage of the pipeline depends upon results generated
-    at a prior stage, and these outputs have to be related to another input
+    at a prior stage, and the inputs have to be matched via an index
     """
 
     name = "org.brain4k.transforms.DataJoin"
-
-    def __init__(self, stage_config, config, **kwargs):
-        super(DataJoin, self).__init__(self, stage_config, config, **kwargs)
-        self.params = config['transforms'][stage_config['transform']]['params']
 
     def join(self):
         if len(self.inputs) != 2:

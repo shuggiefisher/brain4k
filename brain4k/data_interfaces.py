@@ -61,6 +61,9 @@ class HDF5Interface(object):
                 last_index = i + chunk_size
                 h5py_file[key][i:last_index] = out[key][i:last_index].reshape(output_shape)
 
+    def close(self, h5py_file):
+        h5py_file.close()
+
 
 class CSVInterface(object):
 

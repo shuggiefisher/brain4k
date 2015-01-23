@@ -12,7 +12,6 @@ class BVLCCaffeNet(PipelineStage):
     name = "org.berkeleyvision.caffe.bvlc_caffenet"
 
     def __init__(self, stage_config, config, **kwargs):
-        self.params = config['transforms'][stage_config['transform']]['params']
         self.files = {name: Data(data_name, config, config['data'][data_name]) for name, data_name in config['transforms'][stage_config['transform']]['files'].iteritems()}
         super(BVLCCaffeNet, self).__init__(stage_config, config, **kwargs)
         if len(self.outputs) != 1:

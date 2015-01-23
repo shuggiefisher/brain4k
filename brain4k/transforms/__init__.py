@@ -8,6 +8,7 @@ class PipelineStage(object):
         self.config = stage_config
         self.inputs = [Data(name, config, config['data'][name]) for name in stage_config['inputs']]
         self.outputs = [Data(name, config, config['data'][name]) for name in stage_config['outputs']]
+        self.params = config['transforms'][stage_config['transform']].get('params', {})
 
     def chain(self, actions):
         for action in actions:
