@@ -3,15 +3,10 @@ import json
 import logging
 
 from data import path_to_file
-from transforms import TRANSFORMS, render_metrics
-
-IMAGENET_EXTRACTION = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    'brain4k/imagenet'
-)
+from transforms import TRANSFORMS
 
 
-def imagenet_parser(repo_path=IMAGENET_EXTRACTION, cache_stages=True):
+def execute_pipeline(repo_path, cache_stages=True):
     with open(path_to_file(repo_path, 'pipeline.json'), 'r+') as config_file:
         config = json.loads(config_file.read(), encoding='utf-8')
         config['repo_path'] = repo_path
@@ -44,12 +39,12 @@ def imagenet_parser(repo_path=IMAGENET_EXTRACTION, cache_stages=True):
                 if set(config['metrics']) & set(config['stages'][stage_index]['outputs']):
                     metrics_updated = True
 
-        del config['repo_path']
+                del config['repo_path']
 
-        if False in cached_stages:
-            config_file.seek(0)
-            config_file.write(json.dumps(config, indent=4, ensure_ascii=False))
-            # auto-commit ?
+                config_file.seek(0)
+                config_file.write(json.dumps(config, indent=4, ensure_ascii=False))
+
+                config['repo_path'] = repo_path
 
         if metrics_updated:
             render_metrics(config)
@@ -75,7 +70,52 @@ def detect_changes(transforms, stage_configs):
             current_stage_hash = transform.compute_hash()
             if stage_hash != current_stage_hash:
                 break
+            if not varying_files_exist(transform, stage_config):
+                break
 
         cached_stages[index] = True
 
     return cached_stages
+
+
+def varying_files_exist(transform, stage_config):
+    """
+    Do the files we are not checking the hash for actually exist on the
+    file system?
+    """
+    for varying_file in stage_config.get('accept_variance_in', []):
+        for data in [transform.inputs, transform.outputs]:
+            for datum in data:
+                if datum.name == varying_file:
+                    if not os.path.exists(datum.filename):
+                        return False
+
+    return True
+
+
+def render_metrics(config):
+    """
+    Concatenate the markdown files that make up the metrics.
+    Output it as the README.md
+    """
+    input_files = []
+    output_file = path_to_file(config['repo_path'], 'README.md')
+
+    header_file = path_to_file(
+        config['repo_path'],
+        os.path.join('metrics', 'HEADER.md')
+    )
+    if os.path.exists(header_file):
+        input_files.append(header_file)
+
+    for metric_name in config['metrics']:
+        metric_file = os.path.join(
+            'metrics',
+            config['data'][metric_name]['filename']
+        )
+        input_files.append(metric_file)
+
+    with open(output_file, 'w') as outfile:
+        for fname in input_files:
+            with open(fname) as infile:
+                outfile.write(infile.read())

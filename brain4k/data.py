@@ -36,19 +36,31 @@ class Data(object):
         self.filehash = data_config.get('sha1', None)
         local_filename = data_config.get('local_filename', None)
         url = data_config.get('url', None)
-        self.data_type = data_config['data_type']
+
+        if not local_filename and not url:
+            raise ValueError(
+                "Each Data blob must have a local_filename or a url and sha1"
+                " hash specified."
+            )
+
+        self.data_type = data_config.get('data_type', '')
         self._set_filename(local_filename, url, config['repo_path'])
-        self.io_class = FILE_INTERFACES[self.data_type]
+        self.io_class = FILE_INTERFACES.get(self.data_type, FileInterface)
         self.io = self.io_class(self.filename)
 
     def _set_filename(self, local_filename, url, repo_path):
         folders = FILE_PATHS.get(self.data_type, ['data', 'cache'])
 
+        if local_filename:
+            base_name = os.path.basename(local_filename)
+        else:
+            base_name = os.path.basename(url)
+
         for folder in folders:
             self.filename = path_to_file(
                 repo_path,
                 folder,
-                local_filename
+                base_name
             )
 
             # make sure the directory exists
@@ -77,8 +89,7 @@ FILE_INTERFACES = {
     'hdf5': HDF5Interface,
     'csv': CSVInterface,
     'pickle': PickleInterface,
-    'markdown': MarkdownInterface,
-    'graph': FileInterface
+    'markdown': MarkdownInterface
 }
 
 FILE_PATHS = {

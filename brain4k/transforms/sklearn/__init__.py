@@ -10,9 +10,6 @@ class NaiveBayes(PipelineStage):
 
     name = "org.scikit-learn.naive_bayes.MultinomialNB"
 
-    def __init__(self, *args, **kwargs):
-        super(NaiveBayes, self).__init__(*args, **kwargs)
-
     def train(self):
         logging.debug(
             "Reading training data and target from {0} for {1}..."
@@ -81,12 +78,6 @@ class NaiveBayes(PipelineStage):
 class TestTrainSplit(PipelineStage):
 
     name = "org.scikit-learn.cross_validation.test_train_split"
-
-    def __init__(self, config):
-        super(TestTrainSplit, self).__init__(config)
-        self.data = config['data']
-        self.target = config['target']
-        self.ratio = config['ratio']
 
     def split(self):
         if len(self.inputs) != 1:

@@ -60,13 +60,22 @@ class HDF5Interface(FileInterface):
     def save(self, h5py_file):
         h5py_file.close()
 
-    def write_chunk(self, h5py_file, out, output_keys):
-        for key, values in out.iteritems():
-            chunk_size = min(self.write_chunk_size.get(key, 50), out[key].shape[0])
-            output_shape = [chunk_size] + output_keys[key]['dimensions']
-            for i in xrange(0, out[key].shape[0], chunk_size):
+    def read_all(self, keys):
+        h5py_file = self.open()
+        contents = {key: h5py_file[key].value for key in keys}
+        self.close(h5py_file)
+        return contents
+
+    def write_chunk(self, h5py_file, out, output_keys, start_row=0):
+        for key in output_keys.keys():
+            chunk_size = min(self.write_chunk_size.get(key, 500), out[key].shape[0])
+            output_shape = [chunk_size]
+            if output_keys[key]['dimensions'] > 1:
+                output_shape += output_keys[key]['dimensions']
+            for i in xrange(start_row, start_row + out[key].shape[0], chunk_size):
                 last_index = i + chunk_size
-                h5py_file[key][i:last_index] = out[key][i:last_index].reshape(output_shape)
+                last_index_out = min(last_index - start_row, out[key].shape[0])
+                h5py_file[key][i:last_index] = out[key][i-start_row:last_index_out].reshape(output_shape)
 
     def close(self, h5py_file):
         h5py_file.close()
@@ -94,6 +103,14 @@ class CSVInterface(FileInterface):
         )
         for chunk in df:
             yield chunk
+
+    def read_all(self, keys=['url']):
+        df = pd.read_csv(
+            self.filename,
+            compression=self._get_compression(),
+            usecols=keys
+        )
+        return df
 
 
 class PickleInterface(FileInterface):
