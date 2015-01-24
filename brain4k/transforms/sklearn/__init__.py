@@ -13,9 +13,6 @@ class NaiveBayes(PipelineStage):
     def __init__(self, *args, **kwargs):
         super(NaiveBayes, self).__init__(*args, **kwargs)
 
-        # load the model if it is cached
-        self.estimator = MultinomialNB()
-
     def train(self):
         logging.debug(
             "Reading training data and target from {0} for {1}..."
@@ -26,6 +23,7 @@ class NaiveBayes(PipelineStage):
         target = self.params['training_target'].flatten()
 
         logging.debug("Fitting {0} to data...".format(self.name))
+        self.estimator = MultinomialNB()
         self.estimator.fit(data, target)
 
         self.inputs[0].io.close(h5py_input)
@@ -41,6 +39,9 @@ class NaiveBayes(PipelineStage):
         target = self.params['test_target'].flatten()
 
         logging.debug("Testing {0}...".format(self.name))
+
+        # if the train process has not just been run, the estimator
+        # should be loaded as an input
         predictions = self.estimator.transform(data)
 
         self.inputs[0].io.close(h5py_input)
@@ -60,6 +61,11 @@ class NaiveBayes(PipelineStage):
                 'dimensions': [target.shape[0]]
             }
         }
+        self.outputs[0].io.create_dataset(
+            h5py_output,
+            output_keys,
+            predictions.shape[0]
+        )
         self.outputs[0].io.write_chunk(
             h5py_output,
             out,
@@ -67,8 +73,6 @@ class NaiveBayes(PipelineStage):
         )
 
         self.outputs[0].io.save(h5py_output)
-
-        # now generate the metrics
 
     def predict(self):
         raise NotImplementedError()
@@ -95,9 +99,9 @@ class TestTrainSplit(PipelineStage):
             .format(self.inputs[0].filename)
         )
 
-            h5py_input = self.inputs[0].io.open(mode='r')
-            data_key = self.params['data']
-            target_key = self.params['target']
+        h5py_input = self.inputs[0].io.open(mode='r')
+        data_key = self.params['data']
+        target_key = self.params['target']
 
         training_features, test_features, training_labels, test_labels = train_test_split(
             h5py_input[data_key],

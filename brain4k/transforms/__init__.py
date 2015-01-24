@@ -38,5 +38,6 @@ TRANSFORMS = {
     "org.scikit-learn.naive_bayes.MultinomialNB": "brain4k.transforms.sklearn.NaiveBayes",
     "org.berkeleyvision.caffe.bvlc_caffenet": "brain4k.transforms.caffe.BVLCCaffeNet",
     "org.scikit-learn.cross_validation.test_train_split": "brain4k.transforms.sklearn.TestTrainSplit",
-    "org.brain4k.transforms.data_join": "brain4k.transforms.sklearn.DataJoin"
+    "org.brain4k.transforms.data_join": "brain4k.transforms.sklearn.DataJoin",
+    "org.scikit-learn.metrics.confusion_matrix": "brain4k.transforms.sklearn.metrics.ConfusionMatrix",
 }

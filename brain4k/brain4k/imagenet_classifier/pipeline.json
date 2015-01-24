@@ -90,16 +90,15 @@
         },
         "naive_bayes_classifier": {
             "transform_type": "org.scikit-learn.naive_bayes.MultinomialNB"
-        }
-    },
-    "metrics": {
-        "class_confusion": {
-            "metric_type": "confusion_matrix"
+        },
+        "image_classifier_confusion": {
+            "transform_type": "org.scikit-learn.metrics.confusion_matrix"
         },
         "class_certainty": {
             "metric_type": "r2_score"
         }
     },
+    "metrics": ["image_classifier_confusion"],
     "stages": [
         {
             "inputs": [
@@ -133,8 +132,7 @@
             "transform": "naive_bayes_classifier",
             "inputs": ["test_train_features"],
             "outputs": ["image_classifier", "image_classifier_test_results"],
-            "actions": ["train", "test"],
-            "metrics": ["class_confusion", "class_certainty"]
+            "actions": ["train", "test"]
         }
     ],
     "version": 1
