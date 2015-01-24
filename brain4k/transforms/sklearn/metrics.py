@@ -1,5 +1,3 @@
-import logging
-
 from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 
@@ -9,6 +7,10 @@ from brain4k.transforms import PipelineStage
 class ConfusionMatrix(PipelineStage):
 
     def plot(self):
+        if len(self.inputs) != 1:
+            raise ValueError("{0} expects just one input".format(self.name))
+        if len(self.outputs) != 2:
+            raise ValueError("{0} expects two outputs".format(self.name))
 
         input_keys = self.params.get('input_keys', {})
         predictions_key = input_keys.get('predictions', 'predictions')
@@ -31,13 +33,15 @@ class ConfusionMatrix(PipelineStage):
 
         # write scores in squares
 
-        # set background to transparent
-
         plt.title('Confusion matrix')
         plt.ylabel('True label')
         plt.xlabel('Predicted label')
 
         # render plot to image output
-        # plt.show()
+        fig.savefig(self.outputs[0].filename, transparent=True)
 
         # write markdown fragment as output
+        self.outputs[1].io.write({
+            'confusion_matrix': confusion,
+            'image_src': self.outputs[0].filename
+        })

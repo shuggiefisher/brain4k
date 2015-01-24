@@ -35,6 +35,14 @@
         "image_classifier_test_results": {
             "data_type": "hdf5",
             "filename": "image_classifier_test_results.hdf5"
+        },
+        "image_classifier_confusion_graph": {
+            "data_type": "graph",
+            "filename": "image_classifier_confusion.png"
+        },
+        "image_classifier_confusion": {
+            "data_type": "markdown",
+            "filename": "image_classifier_confusion.md"
         }
     },
     "transforms": {
@@ -93,9 +101,6 @@
         },
         "image_classifier_confusion": {
             "transform_type": "org.scikit-learn.metrics.confusion_matrix"
-        },
-        "class_certainty": {
-            "metric_type": "r2_score"
         }
     },
     "metrics": ["image_classifier_confusion"],
@@ -133,6 +138,12 @@
             "inputs": ["test_train_features"],
             "outputs": ["image_classifier", "image_classifier_test_results"],
             "actions": ["train", "test"]
+        },
+        {
+            "transform": "image_classifier_confusion",
+            "inputs": ["image_classifier_test_results"],
+            "outputs": ["image_classifier_confusion_graph", "image_classifier_confusion"],
+            "actions": ["plot"]
         }
     ],
     "version": 1

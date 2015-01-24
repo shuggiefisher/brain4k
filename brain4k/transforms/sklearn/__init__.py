@@ -90,9 +90,9 @@ class TestTrainSplit(PipelineStage):
 
     def split(self):
         if len(self.inputs) != 1:
-            raise ValueError("TestTrainSplit expects just one input")
+            raise ValueError("{0} expects just one input".format(self.name))
         if len(self.outputs) != 1:
-            raise ValueError("TestTrainSplit expects just one output")
+            raise ValueError("{0} expects just one output".format(self.name))
 
         logging.debug(
             "Reading input from {0} to split into test and training set"

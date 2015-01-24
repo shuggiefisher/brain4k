@@ -29,10 +29,16 @@ def compute_json_hash(json_dict):
     return json_hash.hexdigest()
 
 
-class HDF5Interface(object):
+class FileInterface(object):
 
     def __init__(self, filename):
         self.filename = filename
+
+
+class HDF5Interface(FileInterface):
+
+    def __init__(self, filename):
+        super(HDF5Interface, self).__init__(filename)
         self.write_chunk_size = {}
 
     def open(self, mode='r'):
@@ -66,10 +72,7 @@ class HDF5Interface(object):
         h5py_file.close()
 
 
-class CSVInterface(object):
-
-    def __init__(self, filename):
-        self.filename = filename
+class CSVInterface(FileInterface):
 
     def get_row_count(self):
         row_count = sum(1 for line in open(self.filename))
@@ -93,11 +96,21 @@ class CSVInterface(object):
             yield chunk
 
 
-class PickleInterface(object):
-
-    def __init__(self, filename):
-        self.filename = filename
+class PickleInterface(FileInterface):
 
     def save(self, obj):
         with open(self.filename, 'rb') as f:
             cPickle.dump(obj, f, protocol=cPickle.HIGHEST_PROTOCOL)
+
+
+class MarkdownInterface(FileInterface):
+
+    def write(self, context):
+        """
+        TODO: accept templates as input
+        """
+        with open(self.filename, 'w') as f:
+            image = "![Confusion Matrix Caption][{0}]\n\n".format(context['image_src'])
+            values = "Confusion matrix:\n{0}".format(context['confusion_matrix'])
+            f.write(image + values)
+
