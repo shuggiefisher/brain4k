@@ -3,7 +3,7 @@ import json
 import logging
 
 from data import path_to_file
-from transforms import TRANSFORMS
+from transforms import TRANSFORMS, render_metrics
 
 IMAGENET_EXTRACTION = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -27,6 +27,7 @@ def imagenet_parser(repo_path=IMAGENET_EXTRACTION, cache_stages=True):
             transforms.append(transform)
 
         cached_stages = detect_changes(transforms, config['stages'])
+        metrics_updated = False
 
         for stage_index, (transform, stage, stage_is_cached) in enumerate(zip(transforms, config['stages'], cached_stages)):
             if cache_stages and stage_is_cached:
@@ -39,12 +40,19 @@ def imagenet_parser(repo_path=IMAGENET_EXTRACTION, cache_stages=True):
                 actions = transform.chain(methods)
                 config['stages'][stage_index]['sha1'] = transform.compute_hash()
 
+                # does this stage output a metric?
+                if set(config['metrics']) & set(config['stages'][stage_index]['outputs']):
+                    metrics_updated = True
+
         del config['repo_path']
 
         if False in cached_stages:
             config_file.seek(0)
             config_file.write(json.dumps(config, indent=4, ensure_ascii=False))
             # auto-commit ?
+
+        if metrics_updated:
+            render_metrics(config)
 
 
 def init_env(repo_path):

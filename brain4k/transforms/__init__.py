@@ -1,4 +1,6 @@
-from brain4k.data import Data
+import os
+
+from brain4k.data import Data, path_to_file
 from brain4k.data_interfaces import compute_json_hash, compute_file_hash
 
 
@@ -41,3 +43,31 @@ TRANSFORMS = {
     "org.brain4k.transforms.data_join": "brain4k.transforms.sklearn.DataJoin",
     "org.scikit-learn.metrics.confusion_matrix": "brain4k.transforms.sklearn.metrics.ConfusionMatrix",
 }
+
+
+def render_metrics(config):
+    """
+    Concatenate the markdown files that make up the metrics.
+    Output it as the README.md
+    """
+    input_files = []
+    output_file = path_to_file(config['repo_path'], 'README.md')
+
+    header_file = path_to_file(
+        config['repo_path'],
+        os.path.join('metrics', 'HEADER.md')
+    )
+    if os.path.exists(header_file):
+        input_files.append(header_file)
+
+    for metric_name in config['metrics']:
+        metric_file = os.path.join(
+            'metrics',
+            config['data'][metric_name]['filename']
+        )
+        input_files.append(metric_file)
+
+    with open(output_file, 'w') as outfile:
+        for fname in input_files:
+            with open(fname) as infile:
+                outfile.write(infile.read())
