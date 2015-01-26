@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 
 import pandas as pd
 
@@ -30,45 +31,50 @@ class DataJoin(PipelineStage):
             )
         )
 
-        left_index = self.inputs[0].io.read_all([self.params['left_on']])
-        left_index_flattened = left_index[self.params['left_on']].flatten()
+        left_index = self.inputs[0].io.read_all([self.parameters['left_on']])
+        left_index_flattened = left_index[self.parameters['left_on']].flatten()
         # create a minimal dataframe for the left part of the join
-        left = pd.DataFrame({self.params['left_on']: left_index_flattened})
+        left = pd.DataFrame({self.parameters['left_on']: left_index_flattened})
 
-        right_keys = set([self.params['right_on']]) | set(self.params['retain_keys']['right'])
+        right_keys = set([self.parameters['right_on']]) | set(self.parameters['retain_keys']['right'])
         right = self.inputs[1].io.read_all(keys=list(right_keys))
 
         df = pd.merge(
             left,
             right,
             how='left',
-            left_on=self.params['left_on'],
-            right_on=self.params['right_on']
+            left_on=self.parameters['left_on'],
+            right_on=self.parameters['right_on']
         ).dropna()
 
         h5py_file = self.outputs[0].io.open(mode='w')
+        h5py_left = self.inputs[0].io.open()
+
+        left_output_keys = {k: v for k, v in self.parameters['output_keys'].iteritems() if k in self.parameters['retain_keys']['left']}
+        right_output_keys = {k: v for k, v in self.parameters['output_keys'].iteritems() if k in self.parameters['retain_keys']['right']}
+        for keyset, source in [(left_output_keys, h5py_left), (right_output_keys, df)]:
+            for key in keyset:
+                keyset[key]['shape'][0] = source[key].shape[0]
+
         self.outputs[0].io.create_dataset(
             h5py_file,
-            self.params['output_keys'],
-            df.shape[0]
+            self.parameters['output_keys'],
+            deepcopy(left_output_keys).update(right_output_keys)
         )
 
         # first copy the left side in chunks
-        h5py_left = self.inputs[0].io.open()
-        output_keys = {k: v for k, v in self.params['output_keys'].iteritems() if k in self.params['retain_keys']['left']}
         self.outputs[0].io.write_chunk(
             h5py_file,
             h5py_left,
-            output_keys
+            left_output_keys
         )
         self.outputs[0].io.close(h5py_left)
 
         # now copy the right side in from the merged dataframe
-        output_keys = {k: v for k, v in self.params['output_keys'].iteritems() if k in self.params['retain_keys']['right']}
         self.outputs[0].io.write_chunk(
             h5py_file,
-            df[output_keys.keys()],
-            output_keys
+            df[right_output_keys.keys()],
+            right_output_keys
         )
         self.outputs[0].io.save(h5py_file)
 

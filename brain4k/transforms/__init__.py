@@ -7,7 +7,7 @@ class PipelineStage(object):
         self.config = stage_config
         self.inputs = [Data(name, config, config['data'][name]) for name in stage_config['inputs']]
         self.outputs = [Data(name, config, config['data'][name]) for name in stage_config['outputs']]
-        self.params = config['transforms'][stage_config['transform']].get('params', {})
+        self.parameters = config['transforms'][stage_config['transform']].get('parameters', {})
         files = config['transforms'][stage_config['transform']].get('files', {})
         self.files = {name: Data(data_name, config, config['data'][data_name]) for name, data_name in files.iteritems()}
 

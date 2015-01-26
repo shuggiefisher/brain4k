@@ -18,7 +18,7 @@ class BVLCCaffeNet(PipelineStage):
             h5py_file = self.outputs[index].io.open(mode='w')
             self.outputs[index].io.create_dataset(
                 h5py_file,
-                self.params['output_keys'],
+                self.parameters['output_keys'],
                 input_data.io.get_row_count()
             )
 
@@ -27,14 +27,14 @@ class BVLCCaffeNet(PipelineStage):
             for chunk_count, chunk in enumerate(input_data.io.read_chunk(chunk_size=chunk_size)):
                 inputs, processed_urls = self._prepare_image_batch(chunk['url'], chunk_size)
                 logging.debug("Making {0} predictions with {1}".format(chunk_size, self.name))
-                layers_to_extract = list(set(self._net.blobs.keys()) & set(self.params['output_keys'].keys()))
+                layers_to_extract = list(set(self._net.blobs.keys()) & set(self.parameters['output_keys'].keys()))
 
                 out = self._net.forward_all(
                     blobs=layers_to_extract,
                     **{self._net.inputs[0]: inputs}
                 )
                 for key in out.keys():
-                    if key not in self.params['output_keys'].keys():
+                    if key not in self.parameters['output_keys'].keys():
                         del out[key]
                     else:
                         if len(processed_urls) < chunk_size:
@@ -43,15 +43,16 @@ class BVLCCaffeNet(PipelineStage):
 
                 out['processed_urls'] = np.array(
                     processed_urls,
-                    dtype=self.params['output_keys']['processed_urls']['dtype']
+                    dtype=self.parameters['output_keys']['processed_urls']['dtype']
                 )
                 self.outputs[0].io.write_chunk(
                     h5py_file,
                     out,
-                    self.params['output_keys'],
+                    self.parameters['output_keys'],
                     start_row=chunk_count*chunk_size
                 )
 
+            # TODO: shrink dataset size to remove zeros
             self.outputs[index].io.save(h5py_file)
 
     def _prepare_image_batch(self, urls, chunk_size):
@@ -95,7 +96,7 @@ class BVLCCaffeNet(PipelineStage):
                 channel_swap=(2,1,0),
                 raw_scale=255
             )
-            if self.params.get('gpu', False):
+            if self.parameters.get('gpu', False):
                 self._caffe_net.set_gpu()
 
         return self._caffe_net

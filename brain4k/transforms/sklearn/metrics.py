@@ -12,7 +12,7 @@ class ConfusionMatrix(PipelineStage):
         if len(self.outputs) != 2:
             raise ValueError("{0} expects two outputs".format(self.name))
 
-        input_keys = self.params.get('input_keys', {})
+        input_keys = self.parameters.get('input_keys', {})
         predictions_key = input_keys.get('predictions', 'predictions')
         actual_key = input_keys.get('actual', 'actual')
 

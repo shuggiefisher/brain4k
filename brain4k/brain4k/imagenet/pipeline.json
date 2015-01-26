@@ -7,12 +7,12 @@
                 "prototxt": "deploy.prototxt",
                 "mean": "caffe_mean"
             },
-            "params": {
+            "parameters": {
                 "output_keys": {
                     "fc7": {
                         "dtype": "f4",
-                        "dimensions": [
-                            4096
+                        "shape": [
+                            ":", 4096
                         ]
                     }
                 }

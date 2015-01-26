@@ -45,13 +45,18 @@ class HDF5Interface(FileInterface):
         h5py_file = h5py.File(self.filename, mode)
         return h5py_file
 
-    def create_dataset(self, h5py_file, output_keys, rows):
+    def create_dataset(self, h5py_file, output_keys, rows=None):
         logging.info("Creating HDF5 dataset {0}".format(self.filename))
-        for key, params in output_keys.iteritems():
+        for key, parameters in output_keys.iteritems():
+            if rows:
+                shape = [rows] + parameters['shape'][1:]
+            else:
+                shape = parameters['shape']
+
             h5py_file.create_dataset(
                 key,
-                [rows] + params['dimensions'],
-                dtype=np.dtype(params['dtype']),
+                shape,
+                dtype=np.dtype(parameters['dtype']),
                 chunks=True,
                 compression="gzip",
                 compression_opts=7
@@ -69,9 +74,7 @@ class HDF5Interface(FileInterface):
     def write_chunk(self, h5py_file, out, output_keys, start_row=0):
         for key in output_keys.keys():
             chunk_size = min(self.write_chunk_size.get(key, 500), out[key].shape[0])
-            output_shape = [chunk_size]
-            if output_keys[key]['dimensions'] > 1:
-                output_shape += output_keys[key]['dimensions']
+            output_shape = [chunk_size] + list(output_keys[key]['shape'][1:])
             for i in xrange(start_row, start_row + out[key].shape[0], chunk_size):
                 last_index = i + chunk_size
                 last_index_out = min(last_index - start_row, out[key].shape[0])
@@ -116,7 +119,7 @@ class CSVInterface(FileInterface):
 class PickleInterface(FileInterface):
 
     def save(self, obj):
-        with open(self.filename, 'rb') as f:
+        with open(self.filename, 'w') as f:
             cPickle.dump(obj, f, protocol=cPickle.HIGHEST_PROTOCOL)
 
 

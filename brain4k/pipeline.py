@@ -2,7 +2,7 @@ import os
 import json
 import logging
 
-from data import path_to_file
+from data import path_to_file, Data
 from transforms import TRANSFORMS
 
 
@@ -109,11 +109,8 @@ def render_metrics(config):
         input_files.append(header_file)
 
     for metric_name in config['metrics']:
-        metric_file = os.path.join(
-            'metrics',
-            config['data'][metric_name]['filename']
-        )
-        input_files.append(metric_file)
+        datum = Data(metric_name, config, config['data'][metric_name])
+        input_files.append(datum.filename)
 
     with open(output_file, 'w') as outfile:
         for fname in input_files:
