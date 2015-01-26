@@ -130,7 +130,7 @@ class MarkdownInterface(FileInterface):
         TODO: accept templates as input
         """
         with open(self.filename, 'w') as f:
-            image = "![Confusion Matrix Caption][{0}]\n\n".format(context['image_src'])
+            image = "![Confusion Matrix Caption]({0})\n\n".format(context['image_src'])
             values = "Confusion matrix:\n{0}".format(context['confusion_matrix'])
             f.write(image + values)
 
