@@ -20,7 +20,11 @@ except with brain4k pipelines you have Data, Transforms, and Metrics.
 
 ## Installing brain4k
 
+```
+# Install Python
+# easy_install pip
 pip install git+https://github.com/shuggiefisher/brain4k.git
+```
 
 ## Executing a pipeline
 
