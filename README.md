@@ -5,7 +5,7 @@ brain4k, pronounced "brainfork", is a framework that intends to improve the repr
 shareability of machine learning models.  Think of it as MVC for machine learning,
 except with brain4k pipelines you have Data, Transforms, and Metrics.
 
-The rules of brain4k:
+## The rules of brain4k:
 
 1. A brain4k pipeline lives in version control, and so can be forked, reverted and managed like other code.
 2. Each stage in the pipeline is deterministic and reproducible for a given commit
@@ -15,18 +15,18 @@ The rules of brain4k:
 
 ## Sample pipelines
 
-- [Extract image features from a convolutional neural network]()
-- [Train a classifier on image features extracted from a convolutional neural network]()
+- [Extract image features from a convolutional neural network](https://github.com/shuggiefisher/imagenet-feature-extraction)
+- [Train a classifier on image features extracted from a convolutional neural network](https://github.com/shuggiefisher/cat-or-dog-classifier)
 
 ## Installing brain4k
 
-pip install
+pip install git+https://github.com/shuggiefisher/brain4k.git
 
 ## Executing a pipeline
 
 Clone one of our sample pipelines
 
-```git clone repo-name local-path-to-repo```
+```git clone https://github.com/shuggiefisher/cat-or-dog-classifier.git local-path-to-repo```
 
 then, ensuring you have installed the dependencies listed in the README of the repo you just cloned
 
