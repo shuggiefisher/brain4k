@@ -108,6 +108,9 @@ def render_metrics(config):
     if os.path.exists(header_file):
         input_files.append(header_file)
 
+    # pipeline_graph = render_pipeline(config)
+    # input_files.append(pipeline_graph)
+
     for metric_name in config['metrics']:
         datum = Data(metric_name, config, config['data'][metric_name])
         input_files.append(datum.filename)
@@ -116,3 +119,16 @@ def render_metrics(config):
         for fname in input_files:
             with open(fname) as infile:
                 outfile.write(infile.read())
+
+
+# def render_pipeline(config):
+#     figure = Data('pipeline_graph', config, {'local_filename': 'pipeline_graph.png', 'data_type': 'figure'})
+#     pipeline_md = Data('pipeline_figure', config, {'local_filename': 'pipeline_graph.md', 'data_type': 'markdown'})
+
+#     pipeline_dot = x
+#     draw(figure.filename, pipeline_dot)
+
+#     pipeline_md.io.write(template, context)
+
+#     return pipeline_md.filename
+
