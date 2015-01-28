@@ -37,7 +37,7 @@ class DataJoin(PipelineStage):
         left = pd.DataFrame({self.parameters['left_on']: left_index_flattened})
 
         right_keys = set([self.parameters['right_on']]) | set(self.parameters['retain_keys']['right'])
-        right = self.inputs[1].io.read_all(keys=list(right_keys))
+        right = self.inputs[1].io.read_all(usecols=list(right_keys))
 
         df = pd.merge(
             left,

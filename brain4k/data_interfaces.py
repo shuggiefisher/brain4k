@@ -84,6 +84,12 @@ class HDF5Interface(FileInterface):
         h5py_file.close()
 
 
+COMPRESSION_FORMATS = {
+    'gz': 'gzip',
+    'bz2': 'bz2'
+}
+
+
 class CSVInterface(FileInterface):
 
     def get_row_count(self):
@@ -92,10 +98,7 @@ class CSVInterface(FileInterface):
 
     def _get_compression(self):
         extension = os.path.basename(self.filename).split('.')
-        if extension in ['gz', 'bz2']:
-            return extension
-        else:
-            return None
+        return COMPRESSION_FORMATS.get(extension, None)
 
     def read_chunk(self, chunk_size, keys=['url']):
         df = pd.read_csv(
@@ -107,11 +110,11 @@ class CSVInterface(FileInterface):
         for chunk in df:
             yield chunk
 
-    def read_all(self, keys=['url']):
+    def read_all(self, **kwargs):
         df = pd.read_csv(
             self.filename,
             compression=self._get_compression(),
-            usecols=keys
+            **kwargs
         )
         return df
 
