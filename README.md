@@ -27,7 +27,7 @@ Clone one of our sample pipelines
 
 ```git clone repo-name local-path-to-repo```
 
-ensuring you have installed the dependencies listed in the README
+then, ensuring you have installed the dependencies listed in the README of the repo you just cloned
 
 ```brain4k local-path-to-repo```
 
