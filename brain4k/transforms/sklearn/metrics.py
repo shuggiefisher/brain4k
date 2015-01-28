@@ -7,8 +7,8 @@ from brain4k.transforms import PipelineStage
 class ConfusionMatrix(PipelineStage):
 
     def plot(self):
-        if len(self.inputs) != 1:
-            raise ValueError("{0} expects just one input".format(self.name))
+        if not 0 < len(self.inputs) < 3:
+            raise ValueError("{0} expects just one or two inputs".format(self.name))
         if len(self.outputs) != 2:
             raise ValueError("{0} expects two outputs".format(self.name))
 
@@ -28,8 +28,16 @@ class ConfusionMatrix(PipelineStage):
         ax.matshow(confusion)
 
         # get labels from csv
-        # ax.set_xticklabels(['', 'cat', 'dog'])
-        # ax.set_yticklabels(['', 'cat', 'dog'])
+        if len(self.inputs) > 1:
+            label_df = self.inputs[1].io.read_all(index_col=0)
+            label_df['name'] = label_df['name'].astype(h5py_input[actual_key].dtype.name)
+            max_label_known = max(
+                h5py_input[predictions_key].max(),
+                h5py_input[actual_key].value.max()
+            )
+            label_names = label_df.name.values()[:max_label_known]
+            ax.set_xticklabels([''] + label_names)
+            ax.set_yticklabels([''] + label_names)
 
         # write scores in squares
 
