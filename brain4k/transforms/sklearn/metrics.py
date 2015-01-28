@@ -1,3 +1,5 @@
+import os
+
 from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 
@@ -54,5 +56,5 @@ class ConfusionMatrix(PipelineStage):
         # write markdown fragment as output
         self.outputs[1].io.write({
             'confusion_matrix': confusion,
-            'image_src': self.outputs[0].filename
+            'image_src': os.path.relpath(self.outputs[0].filename)
         })
