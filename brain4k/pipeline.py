@@ -36,7 +36,8 @@ def execute_pipeline(repo_path, cache_stages=True):
                 config['stages'][stage_index]['sha1'] = transform.compute_hash()
 
                 # does this stage output a metric?
-                if set(config['metrics']) & set(config['stages'][stage_index]['outputs']):
+                if set(config.get('metrics', [])) & set(config['stages'][stage_index]['outputs']) \
+                    or not os.path.exists(path_to_file(config['repo_path'], 'README.md')):
                     metrics_updated = True
 
                 del config['repo_path']
@@ -101,24 +102,23 @@ def render_metrics(config):
     input_files = []
     output_file = path_to_file(config['repo_path'], 'README.md')
 
-    header_file = path_to_file(
-        config['repo_path'],
-        os.path.join('metrics', 'HEADER.md')
-    )
+    header_file = path_to_file(config['repo_path'], 'HEADER.md')
     if os.path.exists(header_file):
         input_files.append(header_file)
 
     # pipeline_graph = render_pipeline(config)
     # input_files.append(pipeline_graph)
 
-    for metric_name in config['metrics']:
+    for metric_name in config.get('metrics', []):
         datum = Data(metric_name, config, config['data'][metric_name])
         input_files.append(datum.filename)
 
     with open(output_file, 'w') as outfile:
-        for fname in input_files:
+        for i, fname in enumerate(input_files):
             with open(fname) as infile:
-                outfile.write(infile.read())
+                if i == 1:
+                    outfile.write("\n\n# Pipeline performance metrics\n")
+                outfile.write("\n\n{0}\n".format(infile.read()))
 
 
 # def render_pipeline(config):
