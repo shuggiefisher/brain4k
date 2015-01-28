@@ -6,6 +6,7 @@ shareability of machine learning models.  Think of it as MVC for machine learnin
 except with brain4k pipelines you have Data, Transforms, and Metrics.
 
 The rules of brain4k:
+
 1. A brain4k pipeline lives in version control, and so can be forked, reverted and managed like other code.
 2. Each stage in the pipeline is deterministic and reproducible for a given commit
 3. brain4k is framework and language agnostic - pipe from one language to another if your execution environment supports it
