@@ -22,6 +22,6 @@ setup(
   ],
   install_requires = ['numpy', 'pandas', 'h5py'],
   entry_points = {
-    'console_scripts': ['brain4 = brain4k.brain4k:run'],
+    'console_scripts': ['brain4k = brain4k.brain4k:run'],
     },
 )
