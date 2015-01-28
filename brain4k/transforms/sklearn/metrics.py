@@ -18,32 +18,35 @@ class ConfusionMatrix(PipelineStage):
 
         h5py_input = self.inputs[0].io.open(mode='r')
 
-        confusion = confusion_matrix(
-            h5py_input[actual_key].value,
-            h5py_input[predictions_key].value
-        )
-
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        ax.matshow(confusion)
 
         # get labels from csv
+        label_names = None
         if len(self.inputs) > 1:
             label_df = self.inputs[1].io.read_all(index_col=0)
-            label_df['name'] = label_df['name'].astype(h5py_input[actual_key].dtype.name)
+            label_df.index = label_df.index.astype(h5py_input[actual_key].dtype.name)
             max_label_known = max(
-                h5py_input[predictions_key].max(),
+                h5py_input[predictions_key].value.max(),
                 h5py_input[actual_key].value.max()
             )
-            label_names = label_df.name.values()[:max_label_known]
+            label_names = list(label_df.name.values[:max_label_known+1])
             ax.set_xticklabels([''] + label_names)
             ax.set_yticklabels([''] + label_names)
+
+        confusion = confusion_matrix(
+            h5py_input[actual_key].value,
+            h5py_input[predictions_key].value,
+            range(max_label_known+1)
+        )
+        cax = ax.matshow(confusion)
 
         # write scores in squares
 
         plt.title('Confusion matrix')
         plt.ylabel('True label')
         plt.xlabel('Predicted label')
+        fig.colorbar(cax)
 
         # render plot to image output
         fig.savefig(self.outputs[0].filename, transparent=True)

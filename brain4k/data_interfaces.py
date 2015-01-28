@@ -97,7 +97,7 @@ class CSVInterface(FileInterface):
         return row_count - 1
 
     def _get_compression(self):
-        extension = os.path.basename(self.filename).split('.')
+        extension = os.path.basename(self.filename).split('.')[-1]
         return COMPRESSION_FORMATS.get(extension, None)
 
     def read_chunk(self, chunk_size, keys=['url']):
