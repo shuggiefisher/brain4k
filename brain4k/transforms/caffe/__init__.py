@@ -26,31 +26,37 @@ class BVLCCaffeNet(PipelineStage):
 
             for chunk_count, chunk in enumerate(input_data.io.read_chunk(chunk_size=chunk_size)):
                 inputs, processed_urls = self._prepare_image_batch(chunk['url'], chunk_size)
-                logging.debug("Making {0} predictions with {1}".format(chunk_size, self.name))
-                layers_to_extract = list(set(self._net.blobs.keys()) & set(self.parameters['output_keys'].keys()))
+                if len(processed_urls) == 0:
+                    logging.warning(
+                        "No images were successfully fetched from urls: {0}"
+                        .format(chunk['url'])
+                    )
+                else:
+                    logging.debug("Making {0} predictions with {1}".format(chunk_size, self.name))
+                    layers_to_extract = list(set(self._net.blobs.keys()) & set(self.parameters['output_keys'].keys()))
 
-                out = self._net.forward_all(
-                    blobs=layers_to_extract,
-                    **{self._net.inputs[0]: inputs}
-                )
-                for key in out.keys():
-                    if key not in self.parameters['output_keys'].keys():
-                        del out[key]
-                    else:
-                        if len(processed_urls) < chunk_size:
-                            # get rid of padded zeros
-                            out[key] = out[key][:len(processed_urls)]
+                    out = self._net.forward_all(
+                        blobs=layers_to_extract,
+                        **{self._net.inputs[0]: inputs}
+                    )
+                    for key in out.keys():
+                        if key not in self.parameters['output_keys'].keys():
+                            del out[key]
+                        else:
+                            if len(processed_urls) < chunk_size:
+                                # get rid of padded zeros
+                                out[key] = out[key][:len(processed_urls)]
 
-                out['processed_urls'] = np.array(
-                    processed_urls,
-                    dtype=self.parameters['output_keys']['processed_urls']['dtype']
-                )
-                self.outputs[0].io.write_chunk(
-                    h5py_file,
-                    out,
-                    self.parameters['output_keys'],
-                    start_row=chunk_count*chunk_size
-                )
+                    out['processed_urls'] = np.array(
+                        processed_urls,
+                        dtype=self.parameters['output_keys']['processed_urls']['dtype']
+                    )
+                    self.outputs[0].io.write_chunk(
+                        h5py_file,
+                        out,
+                        self.parameters['output_keys'],
+                        start_row=chunk_count*chunk_size
+                    )
 
             # TODO: shrink dataset size to remove zeros
             self.outputs[index].io.save(h5py_file)
