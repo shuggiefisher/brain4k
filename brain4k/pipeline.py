@@ -68,30 +68,15 @@ def detect_changes(transforms, stage_configs):
         if not stage_hash:
             break
         else:
+            if not transform.blob_files_exist():
+                break
             current_stage_hash = transform.compute_hash()
             if stage_hash != current_stage_hash:
-                break
-            if not varying_files_exist(transform, stage_config):
                 break
 
         cached_stages[index] = True
 
     return cached_stages
-
-
-def varying_files_exist(transform, stage_config):
-    """
-    Do the files we are not checking the hash for actually exist on the
-    file system?
-    """
-    for varying_file in stage_config.get('accept_variance_in', []):
-        for data in [transform.inputs, transform.outputs]:
-            for datum in data:
-                if datum.name == varying_file:
-                    if not os.path.exists(datum.filename):
-                        return False
-
-    return True
 
 
 def render_metrics(config):

@@ -1,3 +1,5 @@
+import os
+
 
 class PipelineStage(object):
 
@@ -35,6 +37,19 @@ class PipelineStage(object):
         stage_hash = compute_json_hash({'stage_hashes': sorted(stage_hashes)})
 
         return stage_hash
+
+    def blobs_files_exist(self):
+        """
+        Before computing the sha1 hash, we might want to check that the
+        blob files all exist
+        """
+        data = set(self.inputs) + set(self.files.values()) + set(self.outputs)
+        for datum in data:
+            if not os.path.exists(datum.filename):
+                return False
+
+        return True
+
 
 
 TRANSFORMS = {
