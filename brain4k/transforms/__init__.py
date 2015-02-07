@@ -54,12 +54,12 @@ class PipelineStage(object):
 
         return stage_hash
 
-    def blobs_files_exist(self):
+    def blob_files_exist(self):
         """
         Before computing the sha1 hash, we might want to check that the
         blob files all exist
         """
-        data = set(self.inputs) + set(self.files.values()) + set(self.outputs)
+        data = set(self.inputs) | set(self.files.values()) | set(self.outputs)
         for datum in data:
             if not os.path.exists(datum.filename):
                 return False
