@@ -16,7 +16,7 @@ except with brain4k pipelines you have Data, Transforms, and Metrics.
 ## Sample pipelines
 
 - [Extract image features from a convolutional neural network](https://github.com/shuggiefisher/imagenet-feature-extraction)
-- [Train a classifier on image features extracted from a convolutional neural network](https://github.com/shuggiefisher/cat-or-dog-classifier)
+- [Train a classifier on image features extracted from a convolutional neural network](https://github.com/shuggiefisher/kitten-or-bear-classifier)
 
 ## Installing brain4k
 
@@ -30,7 +30,7 @@ pip install git+https://github.com/shuggiefisher/brain4k.git
 
 Clone one of our sample pipelines
 
-```git clone https://github.com/shuggiefisher/cat-or-dog-classifier.git local-path-to-repo```
+```git clone https://github.com/shuggiefisher/kitten-or-bear-classifier.git local-path-to-repo```
 
 then, ensuring you have installed the dependencies listed in the README of the repo you just cloned
 
