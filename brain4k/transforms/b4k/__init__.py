@@ -1,4 +1,5 @@
 import logging
+import itertools
 from copy import deepcopy
 
 import pandas as pd
@@ -52,9 +53,9 @@ class DataJoin(PipelineStage):
 
         left_output_keys = {k: v for k, v in self.parameters['output_keys'].iteritems() if k in self.parameters['retain_keys']['left']}
         right_output_keys = {k: v for k, v in self.parameters['output_keys'].iteritems() if k in self.parameters['retain_keys']['right']}
-        for keyset, source in [(left_output_keys, h5py_left), (right_output_keys, df)]:
+        for keyset in (left_output_keys, right_output_keys):
             for key in keyset:
-                keyset[key]['shape'][0] = source[key].shape[0]
+                keyset[key]['shape'][0] = df.shape[0]
 
         self.outputs[0].io.create_dataset(
             h5py_file,
@@ -63,17 +64,21 @@ class DataJoin(PipelineStage):
         )
 
         # first copy the left side in chunks
-        self.outputs[0].io.write_chunk(
-            h5py_file,
-            h5py_left,
-            left_output_keys
-        )
-        self.outputs[0].io.close(h5py_left)
+        write_chunk_size = 1000
+        for index, chunk in enumerate(grouper(write_chunk_size, df.index)):
+            self.outputs[0].io.write_chunk(
+                h5py_file,
+                {k: h5py_left[k][list(chunk)] for k in left_output_keys.keys()},
+                left_output_keys,
+                index*write_chunk_size
+            )
+        self.inputs[0].io.close(h5py_left)
 
         # now copy the right side in from the merged dataframe
         self.outputs[0].io.write_chunk(
             h5py_file,
-            df[right_output_keys.keys()],
+            # may be better to do this the conversion within the method
+            {k: df[k].values.astype(right_output_keys[k]['dtype']) for k in right_output_keys.keys()},
             right_output_keys
         )
         self.outputs[0].io.save(h5py_file)
@@ -81,3 +86,15 @@ class DataJoin(PipelineStage):
         logging.info(
             "Completed join saved as {0}".format(self.outputs[0].filename)
         )
+
+
+def grouper(n, iterable):
+    """
+    Iterate through a iterator in batches of n
+    """
+    it = iter(iterable)
+    while True:
+        chunk = tuple(itertools.islice(it, n))
+        if not chunk:
+            return
+        yield chunk
