@@ -1,4 +1,5 @@
 import os
+import logging
 
 
 class PipelineStage(object):
@@ -20,7 +21,22 @@ class PipelineStage(object):
                     "{0} does not support action {1}".format(self.name, action)
                 )
 
-        return [getattr(self, action)() for action in actions]
+        try:
+            results = [getattr(self, action)() for action in actions]
+        except Exception as e:
+            logging.exception(
+                "Encountered unhandled exception during when"
+                " calling {0} on {1}: {2}"
+                .format(action, self.name, e)
+            )
+            logging.exception(
+                "Deleting all output blobs for stage"
+            )
+            for datum in self.outputs:
+                os.remove(datum.filename)
+            raise
+        else:
+            return results
 
     def compute_hash(self):
         from brain4k.data_interfaces import compute_json_hash, compute_file_hash
