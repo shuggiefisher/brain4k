@@ -1,2 +1,2 @@
-include brain4k/LICENSE.txt brain4k/README.md
+include LICENSE.txt README.md
 recursive-include brain4k/templates *

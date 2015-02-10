@@ -1,3 +1,5 @@
+import re
+
 from data import Data
 from settings import template_env
 
@@ -11,8 +13,8 @@ def render_pipeline(config, transforms):
     pipeline_figure.io.save(pipeline_dot)
 
     pipeline_md.io.write(
-        'templates/pipeline_figure',
-        {'dot_graph': pipeline_dot}
+        'templates/pipeline_figure.md',
+        {'dot_graph': re.sub('[\n\t\s]+', ' ', pipeline_dot)}
     )
 
     return pipeline_md.filename
