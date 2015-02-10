@@ -4,6 +4,7 @@ from setuptools import find_packages
 setup(
   name = 'brain4k',
   packages = find_packages(),
+  include_package_data = True,
   version = '0.1',
   description = 'A framework for machine learning pipelines',
   author = 'Robert Kyle',
