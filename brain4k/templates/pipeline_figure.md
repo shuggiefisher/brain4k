@@ -1,0 +1,1 @@
+![Pipeline diagram](http://g.gravizo.com/g?{{dot_graph}})

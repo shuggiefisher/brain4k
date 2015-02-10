@@ -9,6 +9,8 @@ import h5py
 import numpy as np
 import pandas as pd
 
+from settings import template_env
+
 
 def compute_file_hash(file_path):
     logging.debug("computing hash for {0}".format(file_path))
@@ -33,6 +35,10 @@ class FileInterface(object):
 
     def __init__(self, filename):
         self.filename = filename
+
+    def save(self, contents):
+        with open(self.filename, 'w') as f:
+            f.write(contents)
 
 
 class HDF5Interface(FileInterface):
@@ -128,12 +134,8 @@ class PickleInterface(FileInterface):
 
 class MarkdownInterface(FileInterface):
 
-    def write(self, context):
-        """
-        TODO: accept templates as input
-        """
+    def write(self, template_name, context):
+        template = template_env.get_template(template_name)
+        rendered_template = template.render(**context)
         with open(self.filename, 'w') as f:
-            image = "![Confusion Matrix Caption]({0})\n\n".format(context['image_src'])
-            values = "Confusion matrix:\n{0}".format(context['confusion_matrix'])
-            f.write(image + values)
-
+            f.write(rendered_template)

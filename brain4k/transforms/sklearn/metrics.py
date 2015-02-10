@@ -54,7 +54,10 @@ class ConfusionMatrix(PipelineStage):
         fig.savefig(self.outputs[0].filename, transparent=True)
 
         # write markdown fragment as output
-        self.outputs[1].io.write({
-            'confusion_matrix': confusion,
-            'image_src': os.path.relpath(self.outputs[0].filename)
-        })
+        self.outputs[1].io.write(
+            'templates/confusion_matrix.md',
+            {
+                'confusion_matrix': confusion,
+                'image_src': os.path.relpath(self.outputs[0].filename)
+            }
+        )

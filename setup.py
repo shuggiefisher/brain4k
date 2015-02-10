@@ -22,7 +22,7 @@ setup(
     'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4',
   ],
-  install_requires = ['numpy', 'pandas', 'h5py'],
+  install_requires = ['numpy', 'pandas', 'h5py', 'jinja2'],
   entry_points = {
     'console_scripts': ['brain4k = brain4k.brain4k:run'],
     },

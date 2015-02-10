@@ -1,0 +1,27 @@
+digraph G {
+    compound=true;
+    ranksep=1;
+    {% for transform in transforms %}
+        subgraph cluster_{{loop.index}} {
+            style=filled;
+            color=lightgrey;
+            {% for datum in reverse(transform.outputs) %}
+                "{{datum.name}}" [style=filled,color=green];
+            {% endfor %}
+            {% for datum in reverse(transform.inputs) %}
+                "{{datum.name}}" [style=filled,color=orange];
+            {% endfor %}
+            label = "{{transform.transform_name}}";
+        }
+        {% if not loop.first %}
+            {% set last_transform transforms[loop.index0-1] %}
+                "{{last_transform.outputs[-1].name}}" -> "{{transform.inputs[0].name}}" [ltail=cluser_{{loop.index-1}}, lhead=cluser_{{loop.index}}];
+            {% endset %}
+        {% endif %}
+
+    {% endfor %}
+    start -> "{{transforms[0].inputs[0].name}}" [lhead=cluster_1];
+    "{{transforms[-1].outputs[-1].name}}" -> end [ltail=cluster_{{transforms|length}}];
+    start [shape=Mdiamond];
+    end [shape=Msquare];
+}
