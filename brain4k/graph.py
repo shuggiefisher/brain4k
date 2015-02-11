@@ -30,7 +30,6 @@ def render_pipeline(config, transforms):
             short_url = shorten_url(pipeline_image_url)
         except Exception as e:
             logging.error("Unable to shorten url: {0}".format(e))
-        else:
             short_url = pipeline_image_url
     else:
         short_url = pipeline_image_url
