@@ -24,7 +24,8 @@ def render_pipeline(config, transforms):
     pipeline_figure.io.save(pipeline_dot)
 
     uglified_pipeline = re.sub('[\n\t\s]+', ' ', pipeline_dot)
-    pipeline_image_url = "http://g.gravizo.com/g?" + uglified_pipeline
+    gravizo_base_url = "http://g.gravizo.com/g?"
+    pipeline_image_url = gravizo_base_url + urllib2.quote(uglified_pipeline)
     if len(pipeline_image_url) > 500:
         try:
             short_url = shorten_url(pipeline_image_url)
@@ -44,10 +45,9 @@ def render_pipeline(config, transforms):
 
 def shorten_url(long_url):
     url = "https://www.googleapis.com/urlshortener/v1/url"
-    quoted_long_url = urllib2.quote(long_url)
     req = urllib2.Request(
         url,
-        json.dumps({'longUrl': quoted_long_url}),
+        json.dumps({'longUrl': long_url}),
         {'Content-Type': 'application/json'}
     )
     f = urllib2.urlopen(req)
