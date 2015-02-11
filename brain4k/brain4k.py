@@ -21,7 +21,7 @@ class Brain4kArgumentParser(ArgumentParser):
         self.add_argument(
             '--force-render-metrics',
             dest='force_render_metrics',
-            action='store_false',
+            action='store_true',
             help='Re-render the metrics and README.md'
         )
 
