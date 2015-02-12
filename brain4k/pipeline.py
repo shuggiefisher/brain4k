@@ -48,7 +48,10 @@ def execute_pipeline(repo_path, cache_stages=True, force_render_metrics=False):
 
                 config['repo_path'] = repo_path
 
-        if metrics_updated or force_render_metrics:
+        if False in cached_stages or force_render_metrics:
+            # a better way would be store the hash of the pipeline.json
+            # and check if it has changed
+            # TODO: make render_metrics into a hidden stage
             render_metrics(config, transforms)
 
 
@@ -88,12 +91,12 @@ def render_metrics(config, transforms):
     input_files = []
     output_file = path_to_file(config['repo_path'], 'README.md')
 
+    pipeline_graph = render_pipeline(config, transforms)
+    input_files.append(pipeline_graph)
+
     header_file = path_to_file(config['repo_path'], 'HEADER.md')
     if os.path.exists(header_file):
         input_files.append(header_file)
-
-    pipeline_graph = render_pipeline(config, transforms)
-    input_files.append(pipeline_graph)
 
     for metric_name in config.get('metrics', []):
         datum = Data(metric_name, config, config['data'][metric_name])
