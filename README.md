@@ -20,28 +20,29 @@ except with brain4k pipelines you have Data, Transforms, and Metrics.
 
 ## Wishlist
 
-- [ ] Street View House Numbers classifier
-    - Using Caffe's [NiN model](https://gist.github.com/mavenlin/e56253735ef32c3c296d)
-    - Torch [example](https://github.com/torch/demos/blob/master/train-on-housenumbers/train-on-housenumbers.lua)
-- [ ] Object Localization
-    - Using [Overfeat](https://github.com/sermanet/OverFeat)
-    - Using [VGG team's Caffe model](http://www.robots.ox.ac.uk/~vgg/research/very_deep/)
-- [ ] Deconvolutional Autoencoder
-    - Using Caffe's [deconvolution operation](https://github.com/BVLC/caffe/pull/1615)
-- [ ] [Text Understanding from Scratch](http://arxiv.org/abs/1502.01710)
-- [ ] Scene Recognition
-    - Using Caffe's [Places205-CNN model](https://github.com/BVLC/caffe/wiki/Model-Zoo)
-- [ ] Semantic Segmentation
-    - Using [FCN-16s PASCAL](https://gist.github.com/longjon/d24098e083bec05e456e#file-readme-md)
-- [ ] [Facial Keypoints Detection]
-    - [Torch and dp](http://dp.readthedocs.org/en/latest/facialkeypointstutorial/index.html)
-    - [Lasange and Theano](http://danielnouri.org/notes/2014/12/17/using-convolutional-neural-nets-to-detect-facial-keypoints-tutorial/)
 - [ ] [Deep Q-Learning](http://arxiv.org/abs/1312.5602)
     - [Caffe implementation](https://github.com/muupan/dqn-in-the-caffe), [usage instructions](https://07702394979592392565.googlegroups.com/attach/d260fdddad68707c/Setting%20up%20dqn%20in%20the%20caffe.txt?part=0.1&view=1&vt=ANaJVrEc3jdo1TwRSa-SAn_HMQyXt7wEOs6v__bZ7N-vBdfFZ7iEPO_b0-jfYsGGlm9EbtSbJQEzXKTDndV2S7ttzk9ccdSDckdWp5pjiE9DmR5jfIPUCrc)
     - [Theano/Pylearn2/RLGlue](https://github.com/spragunr/deep_q_rl)
     - [Cuda convnet2](https://github.com/kristjankorjus/Replicating-DeepMind)
     - Torch Arcade Learning Environment [Wrapper](https://github.com/fidlej/alewrap), [dataset](https://github.com/fidlej/aledataset)
+- [ ] Scene Recognition
+    - Using Caffe's [Places205-CNN model](https://github.com/BVLC/caffe/wiki/Model-Zoo)
+- [ ] Object Localization
+    - Using [Overfeat](https://github.com/sermanet/OverFeat)
+    - Using [VGG team's Caffe model](http://www.robots.ox.ac.uk/~vgg/research/very_deep/)
+- [ ] Deconvolutional Autoencoder
+    - Using Caffe's [deconvolution operation](https://github.com/BVLC/caffe/pull/1615)
+- [ ] [Facial Keypoints Detection]
+    - [Torch and dp](http://dp.readthedocs.org/en/latest/facialkeypointstutorial/index.html)
+    - [Lasange and Theano](http://danielnouri.org/notes/2014/12/17/using-convolutional-neural-nets-to-detect-facial-keypoints-tutorial/)
 - [ ] [Analysis of financial time series data](http://www.stuartreid.co.za/regression-analysis-using-python-statsmodels-and-quandl/)
+- [ ] [Text Understanding from Scratch](http://arxiv.org/abs/1502.01710)
+- [ ] Street View House Numbers classifier
+    - Using Caffe's [NiN model](https://gist.github.com/mavenlin/e56253735ef32c3c296d)
+    - Torch [example](https://github.com/torch/demos/blob/master/train-on-housenumbers/train-on-housenumbers.lua)
+- [ ] Semantic Segmentation
+    - Using [FCN-16s PASCAL](https://gist.github.com/longjon/d24098e083bec05e456e#file-readme-md)
+
 
 ## Installing brain4k
 
