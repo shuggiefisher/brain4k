@@ -4,6 +4,7 @@ from setuptools import find_packages
 setup(
   name = 'brain4k',
   packages = find_packages(),
+  include_package_data = True,
   version = '0.1',
   description = 'A framework for machine learning pipelines',
   author = 'Robert Kyle',
@@ -22,7 +23,7 @@ setup(
     'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4',
   ],
-  install_requires = ['numpy', 'pandas', 'h5py'],
+  install_requires = ['numpy', 'pandas', 'h5py', 'jinja2'],
   entry_points = {
     'console_scripts': ['brain4k = brain4k.brain4k:run'],
     },

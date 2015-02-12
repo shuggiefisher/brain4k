@@ -1,0 +1,20 @@
+digraph G {
+    compound=true;
+    ranksep=1;
+    ratio=compress;
+    size=728;
+    {% for transform in transforms %}subgraph cluster_{{loop.index}} {
+        style=filled;
+        color=lightgrey;
+        fontname="Helvetica";
+        fontsize=18;
+        {% set outer_loop_index=loop.index %}{% for datum in transform.outputs|reverse %}"{{outer_loop_index}}_{{datum.name}}" [style="filled,rounded",color=green,label="{{datum.name}}",fontname="Verdana",fontsize=12,shape=rectangle];{% endfor %}
+        {% set outer_loop_index=loop.index %}{% for datum in transform.inputs|reverse %}"{{outer_loop_index}}_{{datum.name}}" [style="filled,rounded",color=orange,label="{{datum.name}}",fontname="Verdana",fontsize=12,shape=rectangle];{% endfor %}
+        label = "{{transform.transform_name}}";
+    }
+    {% if not loop.first %}{% set last_index=loop.index0 - 1 %}"{{loop.index - 1}}_{{transforms[last_index].outputs[-1].name}}" -> "{{loop.index}}_{{transform.inputs[0].name}}" [ltail=cluster_{{loop.index-1}}, lhead=cluster_{{loop.index}}];{% endif %}
+    {% endfor %}start -> "1_{{transforms[0].inputs[0].name}}" [lhead=cluster_1];
+    "{{transforms|length}}_{{transforms[-1].outputs[-1].name}}" -> end [ltail=cluster_{{transforms|length}}];
+    start [shape=Mdiamond];
+    end [shape=Msquare];
+}

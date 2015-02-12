@@ -4,9 +4,10 @@ import logging
 
 from data import path_to_file, Data
 from transforms import TRANSFORMS
+from graph import render_pipeline
 
 
-def execute_pipeline(repo_path, cache_stages=True):
+def execute_pipeline(repo_path, cache_stages=True, force_render_metrics=False):
     with open(path_to_file(repo_path, 'pipeline.json'), 'r+') as config_file:
         config = json.loads(config_file.read(), encoding='utf-8')
         config['repo_path'] = repo_path
@@ -47,8 +48,8 @@ def execute_pipeline(repo_path, cache_stages=True):
 
                 config['repo_path'] = repo_path
 
-        if metrics_updated:
-            render_metrics(config)
+        if metrics_updated or force_render_metrics:
+            render_metrics(config, transforms)
 
 
 def init_env(repo_path):
@@ -79,7 +80,7 @@ def detect_changes(transforms, stage_configs):
     return cached_stages
 
 
-def render_metrics(config):
+def render_metrics(config, transforms):
     """
     Concatenate the markdown files that make up the metrics.
     Output it as the README.md
@@ -91,8 +92,8 @@ def render_metrics(config):
     if os.path.exists(header_file):
         input_files.append(header_file)
 
-    # pipeline_graph = render_pipeline(config)
-    # input_files.append(pipeline_graph)
+    pipeline_graph = render_pipeline(config, transforms)
+    input_files.append(pipeline_graph)
 
     for metric_name in config.get('metrics', []):
         datum = Data(metric_name, config, config['data'][metric_name])
@@ -101,19 +102,7 @@ def render_metrics(config):
     with open(output_file, 'w') as outfile:
         for i, fname in enumerate(input_files):
             with open(fname) as infile:
-                if i == 1:
+                if i == 2:
                     outfile.write("\n\n# Pipeline performance metrics\n")
                 outfile.write("\n\n{0}\n".format(infile.read()))
-
-
-# def render_pipeline(config):
-#     figure = Data('pipeline_graph', config, {'local_filename': 'pipeline_graph.png', 'data_type': 'figure'})
-#     pipeline_md = Data('pipeline_figure', config, {'local_filename': 'pipeline_graph.md', 'data_type': 'markdown'})
-
-#     pipeline_dot = x
-#     draw(figure.filename, pipeline_dot)
-
-#     pipeline_md.io.write(template, context)
-
-#     return pipeline_md.filename
 

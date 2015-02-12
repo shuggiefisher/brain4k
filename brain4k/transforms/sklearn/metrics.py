@@ -8,6 +8,10 @@ from brain4k.transforms import PipelineStage
 
 class ConfusionMatrix(PipelineStage):
 
+    def __init__(self, stage_config, config):
+        super(ConfusionMatrix, self).__init__(stage_config, config)
+        self.repo_path = config['repo_path']
+
     def plot(self):
         if not 0 < len(self.inputs) < 3:
             raise ValueError("{0} expects just one or two inputs".format(self.name))
@@ -54,7 +58,10 @@ class ConfusionMatrix(PipelineStage):
         fig.savefig(self.outputs[0].filename, transparent=True)
 
         # write markdown fragment as output
-        self.outputs[1].io.write({
-            'confusion_matrix': confusion,
-            'image_src': os.path.relpath(self.outputs[0].filename)
-        })
+        self.outputs[1].io.write(
+            'templates/confusion_matrix.md',
+            {
+                'confusion_matrix': confusion,
+                'image_src': os.path.relpath(self.outputs[0].filename, self.repo_path)
+            }
+        )
