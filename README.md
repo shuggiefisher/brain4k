@@ -30,6 +30,7 @@ except with brain4k pipelines you have Data, Transforms, and Metrics.
 - [ ] Object Localization
     - Using [Overfeat](https://github.com/sermanet/OverFeat)
     - Using [VGG team's Caffe model](http://www.robots.ox.ac.uk/~vgg/research/very_deep/)
+- [ ] [Semantic modelling using RNNs](https://github.com/IndicoDataSolutions/Passage)
 - [ ] Deconvolutional Autoencoder
     - Using Caffe's [deconvolution operation](https://github.com/BVLC/caffe/pull/1615)
 - [ ] [Facial Keypoints Detection]
