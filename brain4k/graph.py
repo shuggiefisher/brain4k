@@ -84,5 +84,10 @@ def render_dot_locally(dot_string, config):
             config,
             {'local_filename': 'pipeline.png', 'data_type': 'figure'}
         )
-        pipeline_graph.draw(rendered_pipeline.filename, prog='dot')
+
+        # a bit hacky, but the filename starts with the repo dir, so
+        # remove it to get the relative path
+        relative_path = ''.join(rendered_pipeline.filename.split('/')[1:])
+
+        pipeline_graph.draw(relative_path, prog='dot')
         return rendered_pipeline.filename
