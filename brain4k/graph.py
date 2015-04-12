@@ -41,7 +41,7 @@ def render_pipeline(config, transforms, pipeline_name):
             short_url = pipeline_image_url
 
     pipeline_md.io.write(
-        'templates/{0}_pipeline_figure.md'.format(pipeline_name),
+        'templates/pipeline_figure.md',
         {'short_url': short_url, 'pipeline_name': pipeline_name}
     )
 
