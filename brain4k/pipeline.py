@@ -52,7 +52,14 @@ def execute_pipeline(repo_path, pipeline_name, cache_stages=True, force_render_m
                 del config['repo_path']
 
                 config_file.seek(0)
-                config_file.write(json.dumps(config, indent=4, ensure_ascii=False))
+                config_file.write(
+                    json.dumps(
+                        config,
+                        sort_keys=True,
+                        indent=4,
+                        ensure_ascii=False
+                    )
+                )
 
                 config['repo_path'] = repo_path
 
