@@ -29,6 +29,7 @@ except with brain4k pipelines you have Data, Transforms, and Metrics.
 - [ ] Deconvolutional Autoencoder
     - Using Caffe's [deconvolution operation](https://github.com/BVLC/caffe/pull/1615)
 - [ ] [Text Understanding from Scratch](http://arxiv.org/abs/1502.01710)
+- [ ] [Semantic modelling using RNNs](https://github.com/IndicoDataSolutions/Passage)
 - [ ] Scene Recognition
     - Using Caffe's [Places205-CNN model](https://github.com/BVLC/caffe/wiki/Model-Zoo)
 - [ ] Semantic Segmentation
