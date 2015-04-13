@@ -24,16 +24,20 @@ def execute_pipeline(repo_path, pipeline_name, pipeline_args=[], cache_stages=Tr
                 .format(pipeline_name)
             )
         else:
+            pipeline_is_ephemeral = named_stages.get('ephemeral', False)
             named_stages = named_stages['stages']
 
         for stage in named_stages:
             module_name, class_name = TRANSFORMS[config['transforms'][stage['transform']]['transform_type']].rsplit('.',1)
             module = __import__(module_name, fromlist=[class_name])
             transform_cls = getattr(module, class_name)
-            transform = transform_cls(stage, config)
+            transform = transform_cls(stage, config, pipeline_is_ephemeral)
             transforms.append(transform)
 
-        cached_stages = detect_changes(transforms, named_stages)
+        if pipeline_is_ephemeral:
+            cached_stages = [False for s in xrange(len(transforms))]
+        else:
+            cached_stages = detect_changes(transforms, named_stages)
         metrics_updated = False
 
         for stage_index, (transform, stage, stage_is_cached) in enumerate(zip(transforms, named_stages, cached_stages)):
@@ -52,7 +56,7 @@ def execute_pipeline(repo_path, pipeline_name, pipeline_args=[], cache_stages=Tr
                         raise ValueError(
                             "Argument mismatch: {0} passed arguments {1}"
                             ", but accepts {2}"
-                            .format(transform.name, pipeline_args, input_arguments)
+                            .format(transform.transform_name, pipeline_args, input_arguments)
                         )
                     for argument, input_arg in zip(pipeline_args, input_arguments):
                         input_arg.value = argument
@@ -67,7 +71,8 @@ def execute_pipeline(repo_path, pipeline_name, pipeline_args=[], cache_stages=Tr
                     # explicitly documented in pipeline.json
                     pipeline_args = list(chain.from_iterable(actions))
 
-                named_stages[stage_index]['sha1'] = transform.compute_hash()
+                if not pipeline_is_ephemeral:
+                    named_stages[stage_index]['sha1'] = transform.compute_hash()
 
                 # does this stage output a metric?
                 if set(config.get('metrics', [])) & set(named_stages[stage_index]['outputs']) \
@@ -91,6 +96,7 @@ def execute_pipeline(repo_path, pipeline_name, pipeline_args=[], cache_stages=Tr
         if False in cached_stages or force_render_metrics:
             # a better way would be store the hash of the pipeline.json
             # and check if it has changed
+            # emphemeral pipelines will be re-rendered every time :\
             # TODO: make render_metrics into a hidden stage
             render_metrics(config, transforms, pipeline_name)
 

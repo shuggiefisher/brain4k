@@ -33,20 +33,22 @@ class Data(object):
 
     def __init__(self, name, config, data_config, *args, **kwargs):
         self.name = name
+        self.data_type = data_config.get('data_type', '')
+
         self.filehash = data_config.get('sha1', None)
         local_filename = data_config.get('local_filename', None)
         url = data_config.get('url', None)
 
-        if not local_filename and not url:
-            raise ValueError(
-                "Each Data blob must have a local_filename or a url and sha1"
-                " hash specified."
-            )
+        if self.data_type != 'argument':
+            if not local_filename and not url:
+                raise ValueError(
+                    "Each Data blob must have a local_filename or a url and sha1"
+                    " hash specified."
+                )
 
-        self.data_type = data_config.get('data_type', '')
-        self._set_filename(local_filename, url, config['repo_path'])
-        self.io_class = FILE_INTERFACES.get(self.data_type, FileInterface)
-        self.io = self.io_class(self.filename)
+            self._set_filename(local_filename, url, config['repo_path'])
+            self.io_class = FILE_INTERFACES.get(self.data_type, FileInterface)
+            self.io = self.io_class(self.filename)
 
     def _set_filename(self, local_filename, url, repo_path):
         folders = FILE_PATHS.get(self.data_type, ['data', 'cache'])
