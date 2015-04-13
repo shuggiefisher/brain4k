@@ -16,13 +16,15 @@ def execute_pipeline(repo_path, pipeline_name, pipeline_args=[], cache_stages=Tr
         init_env(repo_path)
 
         transforms = []
-        named_stages = config['stages'].get(pipeline_name, None)
+        named_stages = config['pipelines'].get(pipeline_name, None)
 
         if not named_stages:
             raise ValueError(
                 "Pipeline.json does not contain a stage named '{0}'"
                 .format(pipeline_name)
             )
+        else:
+            named_stages = named_stages['stages']
 
         for stage in named_stages:
             module_name, class_name = TRANSFORMS[config['transforms'][stage['transform']]['transform_type']].rsplit('.',1)
@@ -129,7 +131,7 @@ def render_metrics(config, transforms, pipeline_name):
     input_files = []
     output_file = path_to_file(config['repo_path'], 'README.md')
 
-    for named_pipeline in config['stages']:
+    for named_pipeline in config['pipelines']:
         # render the named pipeline specified by the user
         # if the other pipelines have already been rendered, include
         # them in the output
