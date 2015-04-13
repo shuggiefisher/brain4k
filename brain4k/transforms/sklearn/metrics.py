@@ -8,8 +8,8 @@ from brain4k.transforms import PipelineStage
 
 class ConfusionMatrix(PipelineStage):
 
-    def __init__(self, stage_config, config):
-        super(ConfusionMatrix, self).__init__(stage_config, config)
+    def __init__(self, stage_config, config, *args):
+        super(ConfusionMatrix, self).__init__(stage_config, config, *args)
         self.repo_path = config['repo_path']
 
     def plot(self):

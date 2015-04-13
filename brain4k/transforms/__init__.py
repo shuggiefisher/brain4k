@@ -4,7 +4,7 @@ import logging
 
 class PipelineStage(object):
 
-    def __init__(self, stage_config, config, is_ephemeral=False):
+    def __init__(self, stage_config, config, is_ephemeral):
         from brain4k.data import Data
 
         self.config = stage_config
