@@ -1,13 +1,14 @@
 import os
 import json
 import logging
+from itertools import chain
 
 from data import path_to_file, Data
 from transforms import TRANSFORMS
 from graph import render_pipeline, pipeline_md_for_name
 
 
-def execute_pipeline(repo_path, pipeline_name, cache_stages=True, force_render_metrics=False):
+def execute_pipeline(repo_path, pipeline_name, pipeline_args=[], cache_stages=True, force_render_metrics=False):
     with open(path_to_file(repo_path, 'pipeline.json'), 'r+') as config_file:
         config = json.loads(config_file.read(), encoding='utf-8')
         config['repo_path'] = repo_path
@@ -41,7 +42,29 @@ def execute_pipeline(repo_path, pipeline_name, cache_stages=True, force_render_m
                 logging.info("Starting stage {0}".format(stage_index + 1))
                 methods = stage.get('actions', [])
 
+                # if the transform is expecting any in-memory arguments passed
+                # to it, make sure they are passed
+                input_arguments = [t for t in transform.inputs if t.data_type == 'argument']
+                if pipeline_args and input_arguments:
+                    if len(pipeline_args) != len(input_arguments):
+                        raise ValueError(
+                            "Argument mismatch: {0} passed arguments {1}"
+                            ", but accepts {2}"
+                            .format(transform.name, pipeline_args, input_arguments)
+                        )
+                    for argument, input_arg in zip(pipeline_args, input_arguments):
+                        input_arg.value = argument
+
                 actions = transform.chain(methods)
+
+                # if it outputs anything, store these as pipeline_args in case
+                # the next stage is expecting them
+                output_arguments = [t for t in transform.outputs if t.data_type == 'argument']
+                if output_arguments:
+                    # this check is just to ensure output arguments are
+                    # explicitly documented in pipeline.json
+                    pipeline_args = list(chain.from_iterable(actions))
+
                 named_stages[stage_index]['sha1'] = transform.compute_hash()
 
                 # does this stage output a metric?
