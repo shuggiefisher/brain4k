@@ -71,7 +71,11 @@ class NaiveBayes(PipelineStage):
         self.outputs[1].io.save(h5py_output)
 
     def predict(self):
-        raise NotImplementedError()
+        features = self.inputs[0].value[self.parameters['data']]
+        self.estimator = self.inputs[1].read_all()
+        predicted_labels = self.estimator.predict(features)
+        for label, url in zip(predicted_labels, self.inputs[0].value['processed_url']):
+            print "{0} : {1}".format(label, url)
 
 
 class TestTrainSplit(PipelineStage):

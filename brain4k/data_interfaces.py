@@ -131,6 +131,12 @@ class PickleInterface(FileInterface):
         with open(self.filename, 'w') as f:
             cPickle.dump(obj, f, protocol=cPickle.HIGHEST_PROTOCOL)
 
+    def read_all(self):
+        with open(self.filename, 'r') as f:
+            obj = cPickle.loads(f)
+
+        return obj
+
 
 class MarkdownInterface(FileInterface):
 
