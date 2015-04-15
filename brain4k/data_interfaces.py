@@ -133,7 +133,7 @@ class PickleInterface(FileInterface):
 
     def read_all(self):
         with open(self.filename, 'r') as f:
-            obj = cPickle.loads(f)
+            obj = cPickle.loads(f.read())
 
         return obj
 

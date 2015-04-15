@@ -13,7 +13,11 @@ class BVLCCaffeNet(PipelineStage):
     name = "org.berkeleyvision.caffe.bvlc_caffenet"
 
     def predict_for_url(self):
-        urls = self.inputs[0].value
+        """
+        has been written to support multiple urls, but in practice
+        command-line only expects 1 url.  This could be re-written to do only
+        """
+        urls = [self.inputs[0].value]
         chunk_size = 10
         results = defaultdict(list)
 
@@ -28,12 +32,13 @@ class BVLCCaffeNet(PipelineStage):
             if processed_urls:
                 out = self._extract_features(inputs, processed_urls, chunk_size)
                 for key, values in out.iteritems():
-                    results[key].append(values)
+                    output_shape = [values.shape[0]] + list(self.parameters['output_keys'][key]['shape'][1:])
+                    results[key].append(values.reshape(output_shape))
 
         for key, values in results.iteritems():
             results[key] = np.concatenate(values)
 
-        return results
+        return [results]
 
 
     def predict(self):

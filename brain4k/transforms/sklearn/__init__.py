@@ -72,10 +72,12 @@ class NaiveBayes(PipelineStage):
 
     def predict(self):
         features = self.inputs[0].value[self.parameters['data']]
-        self.estimator = self.inputs[1].read_all()
+        self.estimator = self.inputs[1].io.read_all()
         predicted_labels = self.estimator.predict(features)
-        for label, url in zip(predicted_labels, self.inputs[0].value['processed_url']):
-            print "{0} : {1}".format(label, url)
+        print "CLASSIFIER PREDICTION:"
+        print "======================"
+        for index, label in enumerate(predicted_labels):
+            print "{0} : {1}".format(label, self.inputs[0].value['processed_urls'][index])
 
 
 class TestTrainSplit(PipelineStage):

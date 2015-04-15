@@ -146,7 +146,7 @@ def render_metrics(config, transforms, pipeline_name):
             input_files.append(pipeline_graph)
         else:
             pipeline_md = pipeline_md_for_name(config, named_pipeline)
-            if os.filename.exists(pipeline_md.filename):
+            if os.path.exists(pipeline_md.filename):
                 input_files.append(pipeline_md.filename)
 
     header_file = path_to_file(config['repo_path'], 'HEADER.md')
