@@ -23,11 +23,10 @@ def execute_pipeline(repo_path, pipeline_name, pipeline_args=[], cache_stages=Tr
         named_stages = config['pipelines'].get(pipeline_name, None)
 
         if not named_stages:
-            else:
-                raise ValueError(
-                    "Pipeline.json does not contain a stage named '{0}'"
-                    .format(pipeline_name)
-                )
+            raise ValueError(
+                "Pipeline.json does not contain a stage named '{0}'"
+                .format(pipeline_name)
+            )
         else:
             pipeline_is_ephemeral = named_stages.get('ephemeral', False)
             named_stages = named_stages['stages']
