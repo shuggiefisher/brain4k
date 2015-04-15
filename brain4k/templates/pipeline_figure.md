@@ -1,5 +1,3 @@
+# {{pipeline_name|upper}} Pipeline
 
-
-# The Pipeline
-
-![Pipeline diagram]({{short_url}})
+![{{pipeline_name}} pipeline diagram]({{short_url}})

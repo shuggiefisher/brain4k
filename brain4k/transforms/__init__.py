@@ -4,10 +4,11 @@ import logging
 
 class PipelineStage(object):
 
-    def __init__(self, stage_config, config):
+    def __init__(self, stage_config, config, is_ephemeral):
         from brain4k.data import Data
 
         self.config = stage_config
+        self.is_ephemeral = is_ephemeral
         self.inputs = [Data(name, config, config['data'][name]) for name in stage_config['inputs']]
         self.outputs = [Data(name, config, config['data'][name]) for name in stage_config['outputs']]
         self.transform_name = stage_config['transform']

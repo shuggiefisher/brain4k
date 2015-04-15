@@ -24,6 +24,14 @@ class Brain4kArgumentParser(ArgumentParser):
             action='store_true',
             help='Re-render the metrics and README.md'
         )
+        self.add_argument(
+            '-p',
+            dest='pipeline_name',
+            action='store',
+            default=['train'],
+            nargs='+',
+            help='specify the named pipeline to run (default: train)'
+        )
 
 
 def run():
@@ -36,5 +44,7 @@ def run():
 
     execute_pipeline(
         repo_path,
+        brain4k_args.pipeline_name[0],
+        pipeline_args=brain4k_args.pipeline_name[1:],
         force_render_metrics=brain4k_args.force_render_metrics
     )

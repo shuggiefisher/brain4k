@@ -33,6 +33,12 @@ except with brain4k pipelines you have Data, Transforms, and Metrics.
 - [ ] [Semantic modelling using RNNs](https://github.com/IndicoDataSolutions/Passage)
 - [ ] Deconvolutional Autoencoder
     - Using Caffe's [deconvolution operation](https://github.com/BVLC/caffe/pull/1615)
+- [ ] [Text Understanding from Scratch](http://arxiv.org/abs/1502.01710)
+- [ ] [Semantic modelling using RNNs](https://github.com/IndicoDataSolutions/Passage)
+- [ ] Scene Recognition
+    - Using Caffe's [Places205-CNN model](https://github.com/BVLC/caffe/wiki/Model-Zoo)
+- [ ] Semantic Segmentation
+    - Using [FCN-16s PASCAL](https://gist.github.com/longjon/d24098e083bec05e456e#file-readme-md)
 - [ ] [Facial Keypoints Detection]
     - [Torch and dp](http://dp.readthedocs.org/en/latest/facialkeypointstutorial/index.html)
     - [Lasange and Theano](http://danielnouri.org/notes/2014/12/17/using-convolutional-neural-nets-to-detect-facial-keypoints-tutorial/)

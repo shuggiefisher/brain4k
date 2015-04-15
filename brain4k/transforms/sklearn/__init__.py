@@ -71,7 +71,22 @@ class NaiveBayes(PipelineStage):
         self.outputs[1].io.save(h5py_output)
 
     def predict(self):
-        raise NotImplementedError()
+        features = self.inputs[0].value[self.parameters['data']]
+        self.estimator = self.inputs[1].io.read_all()
+        predicted_labels = self.estimator.predict(features)
+
+        label_df = self.inputs[2].io.read_all(index_col=0)
+        label_df.index = label_df.index.astype('uint16')
+
+        print "CLASSIFIER PREDICTION:"
+        print "======================"
+        for index, label in enumerate(predicted_labels):
+            category = np.argmax(predicted_labels)
+            print "{0} : {1}% : {2}".format(
+                label_df.ix[category]['name'],
+                predicted_labels[0][category] * 100,
+                self.inputs[0].value['processed_urls'][index]
+            )
 
 
 class TestTrainSplit(PipelineStage):

@@ -1,14 +1,45 @@
 import logging
+from collections import defaultdict
 
 import numpy as np
 import caffe
 
 from brain4k.transforms import PipelineStage
+from brain4k.transforms.b4k import grouper
 
 
 class BVLCCaffeNet(PipelineStage):
 
     name = "org.berkeleyvision.caffe.bvlc_caffenet"
+
+    def predict_for_url(self):
+        """
+        has been written to support multiple urls, but in practice
+        command-line only expects 1 url.  This could be re-written to do only
+        """
+        urls = [self.inputs[0].value]
+        chunk_size = 10
+        results = defaultdict(list)
+
+        for urls_chunk in grouper(chunk_size, urls):
+            inputs, processed_urls = self._prepare_image_batch(urls_chunk, chunk_size)
+            unprocessed_urls = set(urls) - set(processed_urls)
+            if unprocessed_urls:
+                logging.warning(
+                    "some urls: {0} were not fetched successfully"
+                    .format(unprocessed_urls)
+                )
+            if processed_urls:
+                out = self._extract_features(inputs, processed_urls, chunk_size)
+                for key, values in out.iteritems():
+                    output_shape = [values.shape[0]] + list(self.parameters['output_keys'][key]['shape'][1:])
+                    results[key].append(values.reshape(output_shape))
+
+        for key, values in results.iteritems():
+            results[key] = np.concatenate(values)
+
+        return [results]
+
 
     def predict(self):
         if len(self.outputs) != 1:
@@ -32,25 +63,8 @@ class BVLCCaffeNet(PipelineStage):
                         .format(chunk['url'])
                     )
                 else:
-                    logging.debug("Making {0} predictions with {1}".format(chunk_size, self.name))
-                    layers_to_extract = list(set(self._net.blobs.keys()) & set(self.parameters['output_keys'].keys()))
+                    out = self._extract_features(inputs, processed_urls, chunk_size)
 
-                    out = self._net.forward_all(
-                        blobs=layers_to_extract,
-                        **{self._net.inputs[0]: inputs}
-                    )
-                    for key in out.keys():
-                        if key not in self.parameters['output_keys'].keys():
-                            del out[key]
-                        else:
-                            if len(processed_urls) < chunk_size:
-                                # get rid of padded zeros
-                                out[key] = out[key][:len(processed_urls)]
-
-                    out['processed_urls'] = np.array(
-                        processed_urls,
-                        dtype=self.parameters['output_keys']['processed_urls']['dtype']
-                    )
                     self.outputs[0].io.write_chunk(
                         h5py_file,
                         out,
@@ -106,3 +120,26 @@ class BVLCCaffeNet(PipelineStage):
                 self._caffe_net.set_gpu()
 
         return self._caffe_net
+
+    def _extract_features(self, inputs, processed_urls, chunk_size):
+        logging.debug("Making {0} predictions with {1}".format(chunk_size, self.name))
+        layers_to_extract = list(set(self._net.blobs.keys()) & set(self.parameters['output_keys'].keys()))
+
+        out = self._net.forward_all(
+            blobs=layers_to_extract,
+            **{self._net.inputs[0]: inputs}
+        )
+        for key in out.keys():
+            if key not in self.parameters['output_keys'].keys():
+                del out[key]
+            else:
+                if len(processed_urls) < chunk_size:
+                    # get rid of padded zeros
+                    out[key] = out[key][:len(processed_urls)]
+
+        out['processed_urls'] = np.array(
+            processed_urls,
+            dtype=self.parameters['output_keys']['processed_urls']['dtype']
+        )
+
+        return out
