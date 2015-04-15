@@ -74,7 +74,7 @@ class NaiveBayes(PipelineStage):
     def predict(self):
         features = self.inputs[0].value[self.parameters['data']]
         self.estimator = self.inputs[1].io.read_all()
-        predicted_labels = self.estimator.predict(features)
+        predicted_labels = self.estimator.predict_proba(features)
 
         label_df = self.inputs[2].io.read_all(index_col=0)
         label_df.index = label_df.index.astype('uint16')
