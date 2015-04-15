@@ -16,11 +16,13 @@ def execute_pipeline(repo_path, pipeline_name, pipeline_args=[], cache_stages=Tr
         init_env(repo_path)
 
         transforms = []
+
+        if len(config['pipelines']) == 1:
+            pipeline_name = config['pipelines'].keys()[0]
+
         named_stages = config['pipelines'].get(pipeline_name, None)
 
         if not named_stages:
-            if len(config['pipelines']) == 1:
-                named_stages = config['pipelines'][config['pipelines'].keys()[0]]['stages']
             else:
                 raise ValueError(
                     "Pipeline.json does not contain a stage named '{0}'"
