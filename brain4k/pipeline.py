@@ -72,7 +72,7 @@ def execute_pipeline(repo_path, pipeline_name, pipeline_args=[], cache_stages=Tr
                 if output_arguments:
                     # this check is just to ensure output arguments are
                     # explicitly documented in pipeline.json
-                    pipeline_args = list(chain.from_iterable([a for a actions if a]))
+                    pipeline_args = list(chain.from_iterable([a for a in actions if a]))
 
                 if not pipeline_is_ephemeral:
                     named_stages[stage_index]['sha1'] = transform.compute_hash()
