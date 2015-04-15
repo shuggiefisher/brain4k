@@ -38,7 +38,10 @@ def render_pipeline(config, transforms, pipeline_name):
             short_url = shorten_url(pipeline_image_url)
         except Exception as e:
             logging.error("Unable to shorten url: {0}".format(e))
-            short_url = pipeline_image_url
+            try:
+                short_url = render_dot_locally(uglified_pipeline, config, pipeline_name)
+            except ImportError:
+                short_url = pipeline_image_url
 
     pipeline_md.io.write(
         'templates/pipeline_figure.md',
